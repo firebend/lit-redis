@@ -10,6 +10,7 @@ using Microsoft.Extensions.Primitives;
 
 namespace LitRedis.Core.Implementations
 {
+    //todo write test
     public class LitRedisCacheStore : ILitRedisCacheStore
     {
         private readonly IMemoryCache _cache;
