@@ -5,11 +5,11 @@ using LitRedis.Core.Interfaces;
 
 namespace LitRedis.Core.Implementations
 {
-    public class RedisLitRedisDistributedLock : ILitRedisDistributedLock
+    public class LitRedisDistributedLock : ILitRedisDistributedLock
     {
         private readonly IRedisWrapper _redisWrapper;
 
-        public RedisLitRedisDistributedLock(IRedisWrapper redisWrapper)
+        public LitRedisDistributedLock(IRedisWrapper redisWrapper)
         {
             _redisWrapper = redisWrapper;
         }

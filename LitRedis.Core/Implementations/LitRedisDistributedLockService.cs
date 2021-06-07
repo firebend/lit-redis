@@ -7,16 +7,16 @@ using Microsoft.Extensions.Logging;
 
 namespace LitRedis.Core.Implementations
 {
-    public class RedisLitRedisDistributedLockService : ILitRedisDistributedLockService
+    public class LitRedisDistributedLockService : ILitRedisDistributedLockService
     {
         private readonly ILitRedisDistributedLock _litRedisDistributedLock;
         private readonly ILogger _logger;
 
-        public RedisLitRedisDistributedLockService(ILitRedisDistributedLock litRedisDistributedLock,
+        public LitRedisDistributedLockService(ILitRedisDistributedLock litRedisDistributedLock,
             ILoggerFactory loggerFactory)
         {
             _litRedisDistributedLock = litRedisDistributedLock;
-            _logger = loggerFactory.CreateLogger<RedisLitRedisDistributedLockService>();
+            _logger = loggerFactory.CreateLogger<LitRedisDistributedLockService>();
         }
 
         public Task<LitRedisDistributedLockModel> AcquireLockNoWaitAsync(string key,
