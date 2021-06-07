@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using LitRedis.Core.Interfaces;
 using LitRedis.Core.Models;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 
 namespace LitRedis.Core.Implementations
@@ -19,11 +18,11 @@ namespace LitRedis.Core.Implementations
 
         protected static ConnectionMultiplexer Connection => LitRedisConnection.Connection;
 
-        public RedisWrapper(IOptions<LitRedisOptions> options, ILoggerFactory loggerFactory)
+        public RedisWrapper(LitRedisOptions options, ILoggerFactory loggerFactory)
         {
             Logger = loggerFactory.CreateLogger<RedisWrapper>();
 
-            var connectionString = options?.Value?.ConnectionString;
+            var connectionString = options?.ConnectionString;
 
             if (string.IsNullOrWhiteSpace(connectionString))
             {

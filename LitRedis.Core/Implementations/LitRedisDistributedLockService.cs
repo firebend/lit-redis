@@ -41,7 +41,7 @@ namespace LitRedis.Core.Implementations
                 {
                     var stopped = false;
 
-                    var keepAliveThread = Task.Run(async () =>
+                    var _ = Task.Run(async () =>
                     {
                         while (!stopped && !cancellationToken.IsCancellationRequested)
                         {

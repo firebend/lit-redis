@@ -6,6 +6,14 @@ namespace LitRedis.Core
 {
     public class LitRedisConnection
     {
+        // ReSharper disable FieldCanBeMadeReadOnly.Global
+        // ReSharper disable ConvertToConstant.Global
+        // ReSharper disable InconsistentNaming
+        public static int RedisDeltaBackOffMilliseconds = 5_000;
+        public static int RedisAsyncTimeout = 10_000;
+        public static int RedisConnectTimeout = 10_000;
+        public static int RedisSyncTimeout = 10_000;
+
         private static long _lastReconnectTicks = DateTimeOffset.MinValue.UtcTicks;
         private static DateTimeOffset _firstError = DateTimeOffset.MinValue;
         private static DateTimeOffset _previousError = DateTimeOffset.MinValue;
@@ -100,11 +108,6 @@ namespace LitRedis.Core
                 Interlocked.Exchange(ref _lastReconnectTicks, utcNow.UtcTicks);
             }
         }
-
-        public static int RedisDeltaBackOffMilliseconds = 5_000;
-        public static int RedisAsyncTimeout = 10_000;
-        public static int RedisConnectTimeout = 10_000;
-        public static int RedisSyncTimeout = 10_000;
 
         private static Lazy<ConnectionMultiplexer> CreateMultiplexer()
             => new(() =>
