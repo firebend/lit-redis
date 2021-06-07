@@ -6,6 +6,7 @@ using AutoFixture.AutoMoq;
 using FluentAssertions;
 using LitRedis.Core.Implementations;
 using LitRedis.Core.Interfaces;
+using LitRedis.Core.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
@@ -25,8 +26,12 @@ namespace LitRedis.Tests.Core.Implementations
 
             var redisDistributedLock = fixture.Create<LitRedisDistributedLockService>();
 
+            var model = RequestLockModel
+                .WithKey("fake")
+                .WithLockWaitTimeout(TimeSpan.FromSeconds(1));
+
             //act
-            var result = await redisDistributedLock.AcquireLockAsync("fake", TimeSpan.FromSeconds(1));
+            var result = await redisDistributedLock.AcquireLockAsync(model, default);
 
             //assert
             result.Should().NotBeNull();
@@ -44,8 +49,12 @@ namespace LitRedis.Tests.Core.Implementations
 
             var redisDistributedLock = fixture.Create<LitRedisDistributedLockService>();
 
+            var model = RequestLockModel
+                .WithKey("fake")
+                .WithLockWaitTimeout(TimeSpan.FromSeconds(1));
+
             //act
-            var result = await redisDistributedLock.AcquireLockAsync("fake", TimeSpan.FromSeconds(5));
+            var result = await redisDistributedLock.AcquireLockAsync(model, default);
 
             //assert
             result.Should().NotBeNull();

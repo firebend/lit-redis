@@ -34,7 +34,7 @@ namespace LitRedis.Core.Implementations
             LitRedisConnection.InitializeConnectionString(connectionString);
         }
 
-        public async Task<T> UseRedisAsync<T>(Func<ConnectionMultiplexer, CancellationToken, Task<T>> func, CancellationToken cancellationToken = default)
+        public async Task<T> UseRedisAsync<T>(Func<ConnectionMultiplexer, CancellationToken, Task<T>> func, CancellationToken cancellationToken)
         {
             try
             {
@@ -50,7 +50,7 @@ namespace LitRedis.Core.Implementations
             return default;
         }
 
-        public async Task UseRedisAsync(Func<ConnectionMultiplexer, CancellationToken, Task> func, CancellationToken cancellationToken = default)
+        public async Task UseRedisAsync(Func<ConnectionMultiplexer, CancellationToken, Task> func, CancellationToken cancellationToken)
         {
             try
             {
@@ -64,13 +64,13 @@ namespace LitRedis.Core.Implementations
             }
         }
 
-        public Task<T> UseDbAsync<T>(Func<IDatabase, CancellationToken, Task<T>> fn, CancellationToken cancellationToken = default)
+        public Task<T> UseDbAsync<T>(Func<IDatabase, CancellationToken, Task<T>> fn, CancellationToken cancellationToken)
             => UseRedisAsync((multiplexer, ct) => fn(multiplexer.GetDatabase(), ct), cancellationToken);
 
-        public Task<T> UseServerAsync<T>(Func<IServer, CancellationToken, Task<T>> fn, CancellationToken cancellationToken = default)
+        public Task<T> UseServerAsync<T>(Func<IServer, CancellationToken, Task<T>> fn, CancellationToken cancellationToken)
             => UseRedisAsync((multiplexer, ct) => fn(multiplexer.GetServer(Server), ct), cancellationToken);
 
-        public Task UseServerAsync(Func<IServer, CancellationToken, Task> fn, CancellationToken cancellationToken = default)
+        public Task UseServerAsync(Func<IServer, CancellationToken, Task> fn, CancellationToken cancellationToken)
             => UseRedisAsync((multiplexer, ct) => fn(multiplexer.GetServer(Server), ct), cancellationToken);
 
         protected void DoForceReconnect(Exception ex)

@@ -10,17 +10,17 @@ namespace LitRedis.Core.Interfaces
             string key,
             string token,
             TimeSpan expiryTime,
-            CancellationToken cancellationToken = default);
+            CancellationToken cancellationToken);
 
         Task<bool> ReleaseLockAsync(
             string key,
             string token,
-            CancellationToken cancellationToken = default);
+            CancellationToken cancellationToken);
 
         Task<bool> ExtendLockAsync(
             string key,
             string token,
             TimeSpan expiryTime,
-            CancellationToken cancellationToken = default);
+            CancellationToken cancellationToken);
     }
 }

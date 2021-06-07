@@ -7,18 +7,18 @@ namespace LitRedis.Core
 {
     public interface ILitRedisCacheStore
     {
-        Task PutAsync<T>(string key, T model, TimeSpan? expiry, CancellationToken cancellationToken = default);
+        Task PutAsync<T>(string key, T model, TimeSpan? expiry, CancellationToken cancellationToken);
 
-        Task<T> GetAsync<T>(string key, CancellationToken cancellationToken = default);
+        Task<T> GetAsync<T>(string key, CancellationToken cancellationToken);
 
-        Task<string> GetAsync(string key, CancellationToken cancellationToken = default);
+        Task<string> GetAsync(string key, CancellationToken cancellationToken);
 
-        Task ClearAsync(string key, CancellationToken cancellationToken = default);
+        Task ClearAsync(string key, CancellationToken cancellationToken);
 
-        Task<IEnumerable<string>> GetAllKeys(CancellationToken cancellationToken = default);
+        Task<IEnumerable<string>> GetAllKeys(CancellationToken cancellationToken);
 
-        Task ClearAllAsync(CancellationToken cancellationToken = default);
+        Task ClearAllAsync(CancellationToken cancellationToken);
 
-        Task SetExpiryAsync(string key, TimeSpan span, CancellationToken cancellationToken = default);
+        Task SetExpiryAsync(string key, TimeSpan span, CancellationToken cancellationToken);
     }
 }

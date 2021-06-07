@@ -19,25 +19,21 @@ namespace LitRedis.Core.Implementations
             _logger = loggerFactory.CreateLogger<LitRedisDistributedLockService>();
         }
 
-        public Task<LitRedisDistributedLockModel> AcquireLockNoWaitAsync(string key,
-            CancellationToken cancellationToken = default)
-            => AcquireLockAsync(key, TimeSpan.Zero, cancellationToken);
-
-        public async Task<LitRedisDistributedLockModel> AcquireLockAsync(string key,
-            TimeSpan? acquireLockTimeout = null,
-            CancellationToken cancellationToken = default)
+        public async Task<LitRedisDistributedLockModel> AcquireLockAsync(
+            RequestLockModel requestLockModel,
+            CancellationToken cancellationToken)
         {
             var token = Guid.NewGuid().ToString();
-            var waitForever = acquireLockTimeout == null;
+            var waitForever = requestLockModel.WaitTimeout == null;
             var startTime = DateTime.Now;
-            var stopTimeTicks = waitForever ? 0 : startTime.Add(acquireLockTimeout.GetValueOrDefault()).Ticks;
+            var stopTimeTicks = waitForever ? 0 : startTime.Add(requestLockModel.WaitTimeout.GetValueOrDefault()).Ticks;
             var rnd = new Random();
 
             do
             {
-                var lockKey = MakeKey(key);
-                //acquire the lock with an initial duration of 1 minute
-                if (await _litRedisDistributedLock.TakeLockAsync(lockKey, token, TimeSpan.FromMinutes(1), cancellationToken))
+                var lockKey = MakeKey(requestLockModel.Key);
+
+                if (await _litRedisDistributedLock.TakeLockAsync(lockKey,token, requestLockModel.LockIncrease, cancellationToken))
                 {
                     var stopped = false;
 
@@ -47,8 +43,7 @@ namespace LitRedis.Core.Implementations
                         {
                             try
                             {
-                                //every 30 seconds while the task is still running, extend the lock an additional 1 minute
-                                await _litRedisDistributedLock.ExtendLockAsync(lockKey, token, TimeSpan.FromMinutes(1), cancellationToken);
+                                await _litRedisDistributedLock.ExtendLockAsync(lockKey, token, requestLockModel.LockIncrease, cancellationToken);
                             }
                             catch (Exception ex)
                             {
@@ -57,7 +52,7 @@ namespace LitRedis.Core.Implementations
 
                             try
                             {
-                                await Task.Delay(TimeSpan.FromSeconds(30), cancellationToken);
+                                await Task.Delay(requestLockModel.RenewLockInterval, cancellationToken);
                             }
                             catch (TaskCanceledException) { }
                         }
@@ -70,7 +65,7 @@ namespace LitRedis.Core.Implementations
                             {
                                 //stop the keep alive thread and release the lock
                                 stopped = true;
-                                await _litRedisDistributedLock.ReleaseLockAsync(MakeKey(key), token, cancellationToken);
+                                await _litRedisDistributedLock.ReleaseLockAsync(lockKey, token, cancellationToken);
                             }
                             catch (Exception ex)
                             {
@@ -93,6 +88,6 @@ namespace LitRedis.Core.Implementations
             return LitRedisDistributedLockModel.Failure(cancellationToken.IsCancellationRequested, DateTime.Now - startTime);
         }
 
-        private static string MakeKey(string key) => $"LOCK_{key}";
+        private static string MakeKey(string key) => $"LIT_LOCK_{key}";
     }
 }

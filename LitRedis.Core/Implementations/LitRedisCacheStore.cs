@@ -30,7 +30,7 @@ namespace LitRedis.Core.Implementations
         }
 
         /// <inheritdoc />
-        public async Task PutAsync<T>(string key, T model, TimeSpan? expiry, CancellationToken cancellationToken = default)
+        public async Task PutAsync<T>(string key, T model, TimeSpan? expiry, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -63,7 +63,7 @@ namespace LitRedis.Core.Implementations
         }
 
         /// <inheritdoc />
-        public async Task<string> GetAsync(string key, CancellationToken cancellationToken = default)
+        public async Task<string> GetAsync(string key, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -93,7 +93,7 @@ namespace LitRedis.Core.Implementations
         }
 
         /// <inheritdoc />
-        public async Task ClearAsync(string key, CancellationToken cancellationToken = default)
+        public async Task ClearAsync(string key, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -105,11 +105,11 @@ namespace LitRedis.Core.Implementations
         }
 
         /// <inheritdoc />
-        public Task<IEnumerable<string>> GetAllKeys(CancellationToken cancellationToken = default) =>
+        public Task<IEnumerable<string>> GetAllKeys(CancellationToken cancellationToken) =>
             _redisWrapper.UseServerAsync((server, _) => Task.FromResult(server.Keys().Select(x => x.ToString())), cancellationToken);
 
         /// <inheritdoc />
-        public Task ClearAllAsync(CancellationToken cancellationToken = default) =>
+        public Task ClearAllAsync(CancellationToken cancellationToken) =>
             _redisWrapper.UseServerAsync((server, _) => server.FlushAllDatabasesAsync(), cancellationToken);
 
         public Task SetExpiryAsync(string key, TimeSpan span, CancellationToken cancellationToken) =>

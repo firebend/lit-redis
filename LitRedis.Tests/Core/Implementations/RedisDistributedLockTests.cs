@@ -27,7 +27,7 @@ namespace LitRedis.Tests.Core.Implementations
             var redisDistributedLock = fixture.Create<LitRedisDistributedLock>();
 
             //act
-            var result = await redisDistributedLock.TakeLockAsync("fake", "fake token", TimeSpan.FromSeconds(1));
+            var result = await redisDistributedLock.TakeLockAsync("fake", "fake token", TimeSpan.FromSeconds(1), default);
 
             //assert
             result.Should().BeTrue();
@@ -45,7 +45,7 @@ namespace LitRedis.Tests.Core.Implementations
             var redisDistributedLock = fixture.Create<LitRedisDistributedLock>();
 
             //act
-            var result = await redisDistributedLock.TakeLockAsync("fake", "fake token", TimeSpan.FromSeconds(1));
+            var result = await redisDistributedLock.TakeLockAsync("fake", "fake token", TimeSpan.FromSeconds(1), default);
 
             //assert
             result.Should().BeFalse();
@@ -63,7 +63,7 @@ namespace LitRedis.Tests.Core.Implementations
             var redisDistributedLock = fixture.Create<LitRedisDistributedLock>();
 
             //act
-            var result = await redisDistributedLock.ReleaseLockAsync("fake", "fake token");
+            var result = await redisDistributedLock.ReleaseLockAsync("fake", "fake token", default);
 
             //assert
             result.Should().BeTrue();
@@ -81,7 +81,7 @@ namespace LitRedis.Tests.Core.Implementations
             var redisDistributedLock = fixture.Create<LitRedisDistributedLock>();
 
             //act
-            var result = await redisDistributedLock.ReleaseLockAsync("fake", "fake token");
+            var result = await redisDistributedLock.ReleaseLockAsync("fake", "fake token", default);
 
             //assert
             result.Should().BeFalse();
@@ -99,7 +99,7 @@ namespace LitRedis.Tests.Core.Implementations
             var redisDistributedLock = fixture.Create<LitRedisDistributedLock>();
 
             //act
-            var result = await redisDistributedLock.ExtendLockAsync("fake", "fake token", TimeSpan.FromSeconds(1));
+            var result = await redisDistributedLock.ExtendLockAsync("fake", "fake token", TimeSpan.FromSeconds(1), default);
 
             //assert
             result.Should().BeTrue();
@@ -117,7 +117,7 @@ namespace LitRedis.Tests.Core.Implementations
             var redisDistributedLock = fixture.Create<LitRedisDistributedLock>();
 
             //act
-            var result = await redisDistributedLock.ExtendLockAsync("fake", "fake token", TimeSpan.FromSeconds(1));
+            var result = await redisDistributedLock.ExtendLockAsync("fake", "fake token", TimeSpan.FromSeconds(1), default);
 
             //assert
             result.Should().BeFalse();

@@ -22,7 +22,7 @@ namespace LitRedis.Core.Implementations
             }
         }
 
-        public Task<bool> TakeLockAsync(string key, string token, TimeSpan expiryTime, CancellationToken cancellationToken = default)
+        public Task<bool> TakeLockAsync(string key, string token, TimeSpan expiryTime, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -31,7 +31,7 @@ namespace LitRedis.Core.Implementations
             return _redisWrapper.UseDbAsync((db, _) => db.LockTakeAsync(key, token, expiryTime), cancellationToken);
         }
 
-        public Task<bool> ReleaseLockAsync(string key, string token, CancellationToken cancellationToken = default)
+        public Task<bool> ReleaseLockAsync(string key, string token, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -40,7 +40,7 @@ namespace LitRedis.Core.Implementations
             return _redisWrapper.UseDbAsync((db, _) => db.LockReleaseAsync(key, token), cancellationToken);
         }
 
-        public Task<bool> ExtendLockAsync(string key, string token, TimeSpan expiryTime, CancellationToken cancellationToken = default)
+        public Task<bool> ExtendLockAsync(string key, string token, TimeSpan expiryTime, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
