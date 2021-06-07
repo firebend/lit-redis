@@ -14,12 +14,12 @@ namespace LitRedis.Core.Implementations
     public class LitRedisCacheStore : ILitRedisCacheStore
     {
         private readonly IMemoryCache _cache;
-        private readonly IRedisWrapper _redisWrapper;
+        private readonly ILitRedisConnectionService _litRedisConnectionService;
 
-        public LitRedisCacheStore(IMemoryCache cache, IRedisWrapper redisWrapper)
+        public LitRedisCacheStore(IMemoryCache cache, ILitRedisConnectionService litRedisConnectionService)
         {
             _cache = cache;
-            _redisWrapper = redisWrapper;
+            _litRedisConnectionService = litRedisConnectionService;
         }
 
         private static void KeyGuard(string key)
@@ -48,7 +48,7 @@ namespace LitRedis.Core.Implementations
 
             var str = s ?? JsonSerializer.Serialize(model);
 
-            await _redisWrapper.UseDbAsync((db, _) => db.StringSetAsync(key, str, expiry), cancellationToken);
+            await _litRedisConnectionService.UseDbAsync((db, _) => db.StringSetAsync(key, str, expiry), cancellationToken);
         }
 
         /// <inheritdoc />
@@ -80,7 +80,7 @@ namespace LitRedis.Core.Implementations
                 return value2;
             }
 
-            var str = await _redisWrapper.UseDbAsync(
+            var str = await _litRedisConnectionService.UseDbAsync(
                 (db, _) => db.StringGetAsync(key), cancellationToken);
 
             var cacheEntryOptions = new MemoryCacheEntryOptions()
@@ -102,18 +102,18 @@ namespace LitRedis.Core.Implementations
 
             _cache.Remove(key);
 
-            await _redisWrapper.UseDbAsync((db, _) => db.KeyDeleteAsync(key), cancellationToken);
+            await _litRedisConnectionService.UseDbAsync((db, _) => db.KeyDeleteAsync(key), cancellationToken);
         }
 
         /// <inheritdoc />
         public Task<IEnumerable<string>> GetAllKeys(CancellationToken cancellationToken) =>
-            _redisWrapper.UseServerAsync((server, _) => Task.FromResult(server.Keys().Select(x => x.ToString())), cancellationToken);
+            _litRedisConnectionService.UseServerAsync((server, _) => Task.FromResult(server.Keys().Select(x => x.ToString())), cancellationToken);
 
         /// <inheritdoc />
         public Task ClearAllAsync(CancellationToken cancellationToken) =>
-            _redisWrapper.UseServerAsync((server, _) => server.FlushAllDatabasesAsync(), cancellationToken);
+            _litRedisConnectionService.UseServerAsync((server, _) => server.FlushAllDatabasesAsync(), cancellationToken);
 
         public Task SetExpiryAsync(string key, TimeSpan span, CancellationToken cancellationToken) =>
-            _redisWrapper.UseDbAsync((db, _) => db.KeyExpireAsync(key, span), cancellationToken);
+            _litRedisConnectionService.UseDbAsync((db, _) => db.KeyExpireAsync(key, span), cancellationToken);
     }
 }

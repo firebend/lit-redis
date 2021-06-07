@@ -58,6 +58,32 @@ namespace LitRedis.Core.Models
             return this;
         }
 
+        /// <summary>
+        /// Sets a value indicating to wait forever to try and get the lock.
+        /// Use this if your logic on the lock must run.
+        /// </summary>
+        /// <returns>
+        /// The request lock model.
+        /// </returns>
+        public RequestLockModel WaitForever()
+        {
+            WaitTimeout = null;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets a value indicating to not wait for the lock. i.e. if the lock wasn't grabbed immediately, break out.
+        /// Use this if your logic on the logic needs to move on if the lock is already acquired.
+        /// </summary>
+        /// <returns>
+        /// The request lock model.
+        /// </returns>
+        public RequestLockModel NoWait()
+        {
+            WaitTimeout = TimeSpan.Zero;
+            return this;
+        }
+
         public static RequestLockModel WithKey(string key) => new() {Key = key};
     }
 }

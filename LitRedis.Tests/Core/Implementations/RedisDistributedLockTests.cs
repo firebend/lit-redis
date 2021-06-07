@@ -20,7 +20,7 @@ namespace LitRedis.Tests.Core.Implementations
         {
             //arrange
             var fixture = new Fixture().Customize(new AutoMoqCustomization());
-            var wrapper = fixture.Freeze<Mock<IRedisWrapper>>();
+            var wrapper = fixture.Freeze<Mock<ILitRedisConnectionService>>();
             wrapper.Setup(x => x.UseDbAsync(It.IsAny<Func<IDatabase, CancellationToken, Task<bool>>>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(true);
 
@@ -38,7 +38,7 @@ namespace LitRedis.Tests.Core.Implementations
         {
             //arrange
             var fixture = new Fixture().Customize(new AutoMoqCustomization());
-            var wrapper = fixture.Freeze<Mock<IRedisWrapper>>();
+            var wrapper = fixture.Freeze<Mock<ILitRedisConnectionService>>();
             wrapper.Setup(x => x.UseDbAsync(It.IsAny<Func<IDatabase, CancellationToken, Task<bool>>>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(false);
 
@@ -56,7 +56,7 @@ namespace LitRedis.Tests.Core.Implementations
         {
             //arrange
             var fixture = new Fixture().Customize(new AutoMoqCustomization());
-            var wrapper = fixture.Freeze<Mock<IRedisWrapper>>();
+            var wrapper = fixture.Freeze<Mock<ILitRedisConnectionService>>();
             wrapper.Setup(x => x.UseDbAsync(It.IsAny<Func<IDatabase, CancellationToken, Task<bool>>>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(true);
 
@@ -74,7 +74,7 @@ namespace LitRedis.Tests.Core.Implementations
         {
             //arrange
             var fixture = new Fixture().Customize(new AutoMoqCustomization());
-            var wrapper = fixture.Freeze<Mock<IRedisWrapper>>();
+            var wrapper = fixture.Freeze<Mock<ILitRedisConnectionService>>();
             wrapper.Setup(x => x.UseDbAsync(It.IsAny<Func<IDatabase, CancellationToken, Task<bool>>>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(false);
 
@@ -92,7 +92,7 @@ namespace LitRedis.Tests.Core.Implementations
         {
             //arrange
             var fixture = new Fixture().Customize(new AutoMoqCustomization());
-            var wrapper = fixture.Freeze<Mock<IRedisWrapper>>();
+            var wrapper = fixture.Freeze<Mock<ILitRedisConnectionService>>();
             wrapper.Setup(x => x.UseDbAsync(It.IsAny<Func<IDatabase, CancellationToken, Task<bool>>>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(true);
 
@@ -110,7 +110,7 @@ namespace LitRedis.Tests.Core.Implementations
         {
             //arrange
             var fixture = new Fixture().Customize(new AutoMoqCustomization());
-            var wrapper = fixture.Freeze<Mock<IRedisWrapper>>();
+            var wrapper = fixture.Freeze<Mock<ILitRedisConnectionService>>();
             wrapper.Setup(x => x.UseDbAsync(It.IsAny<Func<IDatabase, CancellationToken, Task<bool>>>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(false);
 

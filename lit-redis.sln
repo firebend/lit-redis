@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LitRedis.Core", "LitRedis.C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LitRedis.Tests", "LitRedis.Tests\LitRedis.Tests.csproj", "{0485DAC5-F195-4973-946A-C49F6C823044}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LitRedis.Sample", "LitRedis.Sample\LitRedis.Sample.csproj", "{1B87AA4D-36C2-4040-968C-00D3232FC30A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,5 +46,17 @@ Global
 		{0485DAC5-F195-4973-946A-C49F6C823044}.Release|x64.Build.0 = Release|Any CPU
 		{0485DAC5-F195-4973-946A-C49F6C823044}.Release|x86.ActiveCfg = Release|Any CPU
 		{0485DAC5-F195-4973-946A-C49F6C823044}.Release|x86.Build.0 = Release|Any CPU
+		{1B87AA4D-36C2-4040-968C-00D3232FC30A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B87AA4D-36C2-4040-968C-00D3232FC30A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B87AA4D-36C2-4040-968C-00D3232FC30A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1B87AA4D-36C2-4040-968C-00D3232FC30A}.Debug|x64.Build.0 = Debug|Any CPU
+		{1B87AA4D-36C2-4040-968C-00D3232FC30A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1B87AA4D-36C2-4040-968C-00D3232FC30A}.Debug|x86.Build.0 = Debug|Any CPU
+		{1B87AA4D-36C2-4040-968C-00D3232FC30A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B87AA4D-36C2-4040-968C-00D3232FC30A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B87AA4D-36C2-4040-968C-00D3232FC30A}.Release|x64.ActiveCfg = Release|Any CPU
+		{1B87AA4D-36C2-4040-968C-00D3232FC30A}.Release|x64.Build.0 = Release|Any CPU
+		{1B87AA4D-36C2-4040-968C-00D3232FC30A}.Release|x86.ActiveCfg = Release|Any CPU
+		{1B87AA4D-36C2-4040-968C-00D3232FC30A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -1,47 +1,32 @@
 using System;
 using System.Threading;
+using LitRedis.Core.Interfaces;
+using LitRedis.Core.Models;
 using StackExchange.Redis;
 
 namespace LitRedis.Core
 {
-    public class LitRedisConnection
+    /// <summary>
+    /// This class should be registered as a singleton in your IoC container.
+    /// It handles connection and reconnecting to Redis.
+    /// </summary>
+    public class LitLitRedisConnection : ILitRedisConnection
     {
-        // ReSharper disable FieldCanBeMadeReadOnly.Global
-        // ReSharper disable ConvertToConstant.Global
-        // ReSharper disable InconsistentNaming
-        public static int RedisDeltaBackOffMilliseconds = 5_000;
-        public static int RedisAsyncTimeout = 10_000;
-        public static int RedisConnectTimeout = 10_000;
-        public static int RedisSyncTimeout = 10_000;
+        private long _lastReconnectTicks = DateTimeOffset.MinValue.UtcTicks;
+        private DateTimeOffset _firstError = DateTimeOffset.MinValue;
+        private DateTimeOffset _previousError = DateTimeOffset.MinValue;
+        private Lazy<ConnectionMultiplexer> _multiplexer;
 
-        private static long _lastReconnectTicks = DateTimeOffset.MinValue.UtcTicks;
-        private static DateTimeOffset _firstError = DateTimeOffset.MinValue;
-        private static DateTimeOffset _previousError = DateTimeOffset.MinValue;
+        private readonly object _reconnectLock = new();
+        private readonly LitRedisOptions _litRedisOptions;
 
-        private static readonly object ReconnectLock = new();
-
-        // In general, let StackExchange.Redis handle most reconnects,
-        // so limit the frequency of how often this will actually reconnect.
-        public static readonly TimeSpan ReconnectMinFrequency = TimeSpan.FromSeconds(60);
-
-        // if errors continue for longer than the below threshold, then the
-        // multiplexer seems to not be reconnecting, so re-create the multiplexer
-        public static readonly TimeSpan ReconnectErrorThreshold = TimeSpan.FromSeconds(30);
-
-        private static string _connectionString = "TODO: CALL InitializeConnectionString() method with connection string";
-        private static Lazy<ConnectionMultiplexer> _multiplexer = CreateMultiplexer();
-
-        public static ConnectionMultiplexer Connection => _multiplexer.Value;
-
-        public static void InitializeConnectionString(string cnxString)
+        public LitLitRedisConnection(LitRedisOptions litRedisOptions)
         {
-            if (string.IsNullOrWhiteSpace(cnxString))
-            {
-                throw new ArgumentNullException(nameof(cnxString));
-            }
-
-            _connectionString = cnxString;
+            _litRedisOptions = litRedisOptions;
+            _multiplexer = CreateMultiplexer();
         }
+
+        public ConnectionMultiplexer GetConnectionMultiplexer() => _multiplexer.Value;
 
         ///<summary>
         /// Force a new ConnectionMultiplexer to be created.
@@ -52,7 +37,7 @@ namespace LitRedis.Core
         ///         a. for at least the "ReconnectErrorThreshold" time of repeated errors before actually reconnecting
         ///         b. not reconnect more frequently than configured in "ReconnectMinFrequency"
         ///</summary>
-        public static void ForceReconnect()
+        public void ForceReconnect()
         {
             var utcNow = DateTimeOffset.UtcNow;
             var previousTicks = Interlocked.Read(ref _lastReconnectTicks);
@@ -60,12 +45,12 @@ namespace LitRedis.Core
             var elapsedSinceLastReconnect = utcNow - previousReconnect;
 
             // If multiple threads call ForceReconnect at the same time, we only want to honor one of them.
-            if (elapsedSinceLastReconnect <= ReconnectMinFrequency)
+            if (elapsedSinceLastReconnect <= _litRedisOptions.ReconnectMinFrequency)
             {
                 return;
             }
 
-            lock (ReconnectLock)
+            lock (_reconnectLock)
             {
                 utcNow = DateTimeOffset.UtcNow;
                 elapsedSinceLastReconnect = utcNow - previousReconnect;
@@ -78,7 +63,7 @@ namespace LitRedis.Core
                     return;
                 }
 
-                if (elapsedSinceLastReconnect < ReconnectMinFrequency)
+                if (elapsedSinceLastReconnect < _litRedisOptions.ReconnectMinFrequency)
                 {
                     return; // Some other thread made it through the check and the lock, so nothing to do.
                 }
@@ -87,9 +72,9 @@ namespace LitRedis.Core
                 var elapsedSinceMostRecentError = utcNow - _previousError;
 
                 var shouldReconnect =
-                    elapsedSinceFirstError >= ReconnectErrorThreshold // make sure we gave the multiplexer enough time to reconnect on its own if it can
+                    elapsedSinceFirstError >= _litRedisOptions.ReconnectErrorThreshold // make sure we gave the multiplexer enough time to reconnect on its own if it can
                     && elapsedSinceMostRecentError <=
-                    ReconnectErrorThreshold; //make sure we aren't working on stale data (e.g. if there was a gap in errors, don't reconnect yet).
+                    _litRedisOptions.ReconnectErrorThreshold; //make sure we aren't working on stale data (e.g. if there was a gap in errors, don't reconnect yet).
 
                 // Update the previousError timestamp to be now (e.g. this reconnect request)
                 _previousError = utcNow;
@@ -109,14 +94,14 @@ namespace LitRedis.Core
             }
         }
 
-        private static Lazy<ConnectionMultiplexer> CreateMultiplexer()
+        private Lazy<ConnectionMultiplexer> CreateMultiplexer()
             => new(() =>
             {
-                var options = ConfigurationOptions.Parse(_connectionString);
-                options.AsyncTimeout = RedisAsyncTimeout;
-                options.ConnectTimeout = RedisConnectTimeout;
-                options.SyncTimeout = RedisSyncTimeout;
-                options.ReconnectRetryPolicy = new ExponentialRetry(RedisDeltaBackOffMilliseconds);
+                var options = ConfigurationOptions.Parse(_litRedisOptions.ConnectionString);
+                options.AsyncTimeout = _litRedisOptions.RedisAsyncTimeout;
+                options.ConnectTimeout = _litRedisOptions.RedisConnectTimeout;
+                options.SyncTimeout = _litRedisOptions.RedisSyncTimeout;
+                options.ReconnectRetryPolicy = new ExponentialRetry(_litRedisOptions.RedisDeltaBackOffMilliseconds);
                 return ConnectionMultiplexer.Connect(options);
             });
 

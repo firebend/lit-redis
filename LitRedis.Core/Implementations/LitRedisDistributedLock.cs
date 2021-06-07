@@ -7,11 +7,11 @@ namespace LitRedis.Core.Implementations
 {
     public class LitRedisDistributedLock : ILitRedisDistributedLock
     {
-        private readonly IRedisWrapper _redisWrapper;
+        private readonly ILitRedisConnectionService _litRedisConnectionService;
 
-        public LitRedisDistributedLock(IRedisWrapper redisWrapper)
+        public LitRedisDistributedLock(ILitRedisConnectionService litRedisConnectionService)
         {
-            _redisWrapper = redisWrapper;
+            _litRedisConnectionService = litRedisConnectionService;
         }
 
         private static void KeyGuard(string key)
@@ -28,7 +28,7 @@ namespace LitRedis.Core.Implementations
 
             KeyGuard(key);
 
-            return _redisWrapper.UseDbAsync((db, _) => db.LockTakeAsync(key, token, expiryTime), cancellationToken);
+            return _litRedisConnectionService.UseDbAsync((db, _) => db.LockTakeAsync(key, token, expiryTime), cancellationToken);
         }
 
         public Task<bool> ReleaseLockAsync(string key, string token, CancellationToken cancellationToken)
@@ -37,7 +37,7 @@ namespace LitRedis.Core.Implementations
 
             KeyGuard(key);
 
-            return _redisWrapper.UseDbAsync((db, _) => db.LockReleaseAsync(key, token), cancellationToken);
+            return _litRedisConnectionService.UseDbAsync((db, _) => db.LockReleaseAsync(key, token), cancellationToken);
         }
 
         public Task<bool> ExtendLockAsync(string key, string token, TimeSpan expiryTime, CancellationToken cancellationToken)
@@ -46,7 +46,7 @@ namespace LitRedis.Core.Implementations
 
             KeyGuard(key);
 
-            return _redisWrapper.UseDbAsync((db, _) => db.LockExtendAsync(key, token, expiryTime), cancellationToken);
+            return _litRedisConnectionService.UseDbAsync((db, _) => db.LockExtendAsync(key, token, expiryTime), cancellationToken);
         }
     }
 }

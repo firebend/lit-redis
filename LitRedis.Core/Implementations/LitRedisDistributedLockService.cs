@@ -28,12 +28,12 @@ namespace LitRedis.Core.Implementations
             var startTime = DateTime.Now;
             var stopTimeTicks = waitForever ? 0 : startTime.Add(requestLockModel.WaitTimeout.GetValueOrDefault()).Ticks;
             var rnd = new Random();
+            var lockKey = MakeKey(requestLockModel.Key);
 
             do
             {
-                var lockKey = MakeKey(requestLockModel.Key);
 
-                if (await _litRedisDistributedLock.TakeLockAsync(lockKey,token, requestLockModel.LockIncrease, cancellationToken))
+                if (await _litRedisDistributedLock.TakeLockAsync(lockKey, token, requestLockModel.LockIncrease, cancellationToken))
                 {
                     var stopped = false;
 

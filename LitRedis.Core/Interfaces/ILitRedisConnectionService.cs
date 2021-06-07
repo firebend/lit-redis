@@ -5,7 +5,7 @@ using StackExchange.Redis;
 
 namespace LitRedis.Core.Interfaces
 {
-    public interface IRedisWrapper
+    public interface ILitRedisConnectionService
     {
         Task<T> UseRedisAsync<T>(Func<ConnectionMultiplexer, CancellationToken, Task<T>> func, CancellationToken cancellationToken);
 

@@ -10,17 +10,22 @@ using StackExchange.Redis;
 
 namespace LitRedis.Core.Implementations
 {
-    public class RedisWrapper : IRedisWrapper
+    public class LitRedisConnectionService : ILitRedisConnectionService
     {
-        protected ILogger Logger { get; }
+        private readonly ILitRedisConnection _litRedisConnection;
+        private ILogger Logger { get; }
 
-        protected string Server { get; }
+        private string Server { get; }
 
-        protected static ConnectionMultiplexer Connection => LitRedisConnection.Connection;
+        private ConnectionMultiplexer Connection => _litRedisConnection.GetConnectionMultiplexer();
 
-        public RedisWrapper(LitRedisOptions options, ILoggerFactory loggerFactory)
+        public LitRedisConnectionService(
+            ILitRedisConnection litRedisConnection,
+            LitRedisOptions options,
+            ILoggerFactory loggerFactory)
         {
-            Logger = loggerFactory.CreateLogger<RedisWrapper>();
+            _litRedisConnection = litRedisConnection;
+            Logger = loggerFactory.CreateLogger<LitRedisConnectionService>();
 
             var connectionString = options?.ConnectionString;
 
@@ -30,8 +35,6 @@ namespace LitRedis.Core.Implementations
             }
 
             Server = connectionString.Split(',').FirstOrDefault();
-
-            LitRedisConnection.InitializeConnectionString(connectionString);
         }
 
         public async Task<T> UseRedisAsync<T>(Func<ConnectionMultiplexer, CancellationToken, Task<T>> func, CancellationToken cancellationToken)
@@ -45,9 +48,9 @@ namespace LitRedis.Core.Implementations
                 Logger.LogWarning("Error using redis. Exception: {Exception}", e);
 
                 DoForceReconnect(e);
-            }
 
-            return default;
+                throw;
+            }
         }
 
         public async Task UseRedisAsync(Func<ConnectionMultiplexer, CancellationToken, Task> func, CancellationToken cancellationToken)
@@ -61,6 +64,8 @@ namespace LitRedis.Core.Implementations
                 Logger.LogWarning("Error using redis. Exception: {Exception}", e);
 
                 DoForceReconnect(e);
+
+                throw;
             }
         }
 
@@ -84,7 +89,7 @@ namespace LitRedis.Core.Implementations
 
             try
             {
-                LitRedisConnection.ForceReconnect();
+                _litRedisConnection.ForceReconnect();
             }
             catch (Exception e)
             {
