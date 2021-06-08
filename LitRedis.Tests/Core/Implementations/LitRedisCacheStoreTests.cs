@@ -50,7 +50,7 @@ namespace LitRedis.Tests.Core.Implementations
         public async Task Lit_Redis_Cache_Store_Should_Get_Value_Object()
         {
             //arrange
-            var cacheValue = new FakeCacheObject {Value = "Fakey Fake"};
+            var cacheValue = new FakeCacheObject { Value = "Fakey Fake" };
 
             var fixture = new Fixture();
             fixture.Customize(new AutoMoqCustomization());
@@ -78,7 +78,7 @@ namespace LitRedis.Tests.Core.Implementations
         public async Task Lit_Redis_Cache_Store_Should_Put_Value_Object()
         {
             //arrange
-            var cacheValue = new FakeCacheObject {Value = "Fakey Fake"};
+            var cacheValue = new FakeCacheObject { Value = "Fakey Fake" };
 
             var fixture = new Fixture();
             fixture.Customize(new AutoMoqCustomization());

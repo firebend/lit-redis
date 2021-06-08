@@ -6,10 +6,10 @@ namespace LitRedis.Core.Models
     {
         public string ConnectionString { get; set; }
 
-        public int RedisDeltaBackOffMilliseconds {get; set;} = 5_000;
-        public int RedisAsyncTimeout {get; set;} = 10_000;
-        public int RedisConnectTimeout {get; set;} = 10_000;
-        public int RedisSyncTimeout {get; set;} = 10_000;
+        public int RedisDeltaBackOffMilliseconds { get; set; } = 5_000;
+        public int RedisAsyncTimeout { get; set; } = 10_000;
+        public int RedisConnectTimeout { get; set; } = 10_000;
+        public int RedisSyncTimeout { get; set; } = 10_000;
 
         // In general, let StackExchange.Redis handle most reconnects,
         // so limit the frequency of how often this will actually reconnect.

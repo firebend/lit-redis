@@ -84,6 +84,6 @@ namespace LitRedis.Core.Models
             return this;
         }
 
-        public static RequestLockModel WithKey(string key) => new() {Key = key};
+        public static RequestLockModel WithKey(string key) => new() { Key = key };
     }
 }
