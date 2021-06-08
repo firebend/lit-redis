@@ -26,5 +26,5 @@ jobs:
       uses: rohith/publish-nuget@v2
       with:
          PROJECT_FILE_PATH: LitRedis.Core/LitRedis.Core.csproj
-         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+         NUGET_KEY: ${{secrets.FIREBEND_NUGET_KEY}}
          TAG_COMMIT: false
