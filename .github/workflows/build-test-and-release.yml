@@ -18,13 +18,13 @@ jobs:
     - name: Install dependencies
       run: dotnet restore jobba.sln
     - name: Build
-      run: dotnet build jobba.sln --configuration Release --no-restore
+      run: dotnet build lit-redis.sln --configuration Release --no-restore
     - name: Test
-      run: dotnet test jobba.sln --logger GitHubActions --no-restore --verbosity normal
+      run: dotnet test lit-redis.sln --logger GitHubActions --no-restore --verbosity normal
 
     - name: Publish Core
       uses: rohith/publish-nuget@v2
       with:
-         PROJECT_FILE_PATH: jobba.Core/jobba.Core.csproj
+         PROJECT_FILE_PATH: LitRedis.Core/LitRedis.Core.csproj
          NUGET_KEY: ${{secrets.NUGET_API_KEY}}
          TAG_COMMIT: false

@@ -37,7 +37,7 @@ namespace LitRedis.Core.Implementations
             Server = connectionString.Split(',').FirstOrDefault();
         }
 
-        public async Task<T> UseRedisAsync<T>(Func<ConnectionMultiplexer, CancellationToken, Task<T>> func, CancellationToken cancellationToken)
+        private async Task<T> UseRedisAsync<T>(Func<ConnectionMultiplexer, CancellationToken, Task<T>> func, CancellationToken cancellationToken)
         {
             try
             {
@@ -53,7 +53,7 @@ namespace LitRedis.Core.Implementations
             }
         }
 
-        public async Task UseRedisAsync(Func<ConnectionMultiplexer, CancellationToken, Task> func, CancellationToken cancellationToken)
+        private async Task UseRedisAsync(Func<ConnectionMultiplexer, CancellationToken, Task> func, CancellationToken cancellationToken)
         {
             try
             {
@@ -78,7 +78,7 @@ namespace LitRedis.Core.Implementations
         public Task UseServerAsync(Func<IServer, CancellationToken, Task> fn, CancellationToken cancellationToken)
             => UseRedisAsync((multiplexer, ct) => fn(multiplexer.GetServer(Server), ct), cancellationToken);
 
-        protected void DoForceReconnect(Exception ex)
+        private void DoForceReconnect(Exception ex)
         {
             var shouldReconnect = ex is RedisConnectionException or SocketException;
 

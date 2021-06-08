@@ -13,10 +13,10 @@ using Moq;
 namespace LitRedis.Tests.Core.Implementations
 {
     [TestClass]
-    public class DistributedLockServiceTests
+    public class LitRedisDistributedLockServiceTests
     {
         [TestMethod]
-        public async Task Distributed_Lock_Service_Should_Acquire_Lock()
+        public async Task Lit_Redis_Distributed_Lock_Service_Should_Acquire_Lock()
         {
             //arrange
             var fixture = new Fixture().Customize(new AutoMoqCustomization());
@@ -39,7 +39,7 @@ namespace LitRedis.Tests.Core.Implementations
         }
 
         [TestMethod]
-        public async Task Distributed_Lock_Service_Should_Not_Acquire_Lock()
+        public async Task Lit_Redis_Distributed_Lock_Service_Should_Not_Acquire_Lock()
         {
             //arrange
             var fixture = new Fixture().Customize(new AutoMoqCustomization());

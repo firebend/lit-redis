@@ -4,7 +4,7 @@ using LitRedis.Core.Interfaces;
 using LitRedis.Core.Models;
 using StackExchange.Redis;
 
-namespace LitRedis.Core
+namespace LitRedis.Core.Implementations
 {
     /// <summary>
     /// This class should be registered as a singleton in your IoC container.

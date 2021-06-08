@@ -13,10 +13,10 @@ using StackExchange.Redis;
 namespace LitRedis.Tests.Core.Implementations
 {
     [TestClass]
-    public class RedisDistributedLockTests
+    public class LitRedisDistributedLockTests
     {
         [TestMethod]
-        public async Task Redis_Distributed_Lock_Should_Take_Lock()
+        public async Task Lit_Redis_Distributed_Lock_Should_Take_Lock()
         {
             //arrange
             var fixture = new Fixture().Customize(new AutoMoqCustomization());
@@ -34,7 +34,7 @@ namespace LitRedis.Tests.Core.Implementations
         }
 
         [TestMethod]
-        public async Task Redis_Distributed_Lock_Should_Not_Take_Lock()
+        public async Task Lit_Redis_Distributed_Lock_Should_Not_Take_Lock()
         {
             //arrange
             var fixture = new Fixture().Customize(new AutoMoqCustomization());
@@ -52,7 +52,7 @@ namespace LitRedis.Tests.Core.Implementations
         }
 
         [TestMethod]
-        public async Task Redis_Distributed_Lock_Should_Release_Lock()
+        public async Task Lit_Redis_Distributed_Lock_Should_Release_Lock()
         {
             //arrange
             var fixture = new Fixture().Customize(new AutoMoqCustomization());
@@ -70,7 +70,7 @@ namespace LitRedis.Tests.Core.Implementations
         }
 
         [TestMethod]
-        public async Task Redis_Distributed_Lock_Should_Not_Release_Lock()
+        public async Task Lit_Redis_Distributed_Lock_Should_Not_Release_Lock()
         {
             //arrange
             var fixture = new Fixture().Customize(new AutoMoqCustomization());
@@ -88,7 +88,7 @@ namespace LitRedis.Tests.Core.Implementations
         }
 
         [TestMethod]
-        public async Task Redis_Distributed_Lock_Should_Extend_Lock()
+        public async Task Lit_Redis_Distributed_Lock_Should_Extend_Lock()
         {
             //arrange
             var fixture = new Fixture().Customize(new AutoMoqCustomization());
@@ -106,7 +106,7 @@ namespace LitRedis.Tests.Core.Implementations
         }
 
         [TestMethod]
-        public async Task Redis_Distributed_Lock_Should_Not_Extend_Lock()
+        public async Task Lit_Redis_Distributed_Lock_Should_Not_Extend_Lock()
         {
             //arrange
             var fixture = new Fixture().Customize(new AutoMoqCustomization());

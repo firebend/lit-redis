@@ -9,6 +9,20 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LitRedis.Tests", "LitRedis.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LitRedis.Sample", "LitRedis.Sample\LitRedis.Sample.csproj", "{1B87AA4D-36C2-4040-968C-00D3232FC30A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{6F9F696A-3639-4D05-866A-555D06C667C4}"
+ProjectSection(SolutionItems) = preProject
+	README.md = README.md
+	nuget-image.png = nuget-image.png
+	LICENSE = LICENSE
+	.editorconfig = .editorconfig
+	.gitignore = .gitignore
+	.config\dotnet-tools.json = .config\dotnet-tools.json
+	.github\workflows\build-and-test.yml = .github\workflows\build-and-test.yml
+	.github\workflows\build-test-and-release.yml = .github\workflows\build-test-and-release.yml
+	.github\ISSUE_TEMPLATE\feature_request.md = .github\ISSUE_TEMPLATE\feature_request.md
+	.github\ISSUE_TEMPLATE\bug_report.md = .github\ISSUE_TEMPLATE\bug_report.md
+EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

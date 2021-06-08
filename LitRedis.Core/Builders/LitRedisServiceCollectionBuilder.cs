@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace LitRedis.Core.Builders
 {
-    //todo: make it
     //todo: test
     public class LitRedisServiceCollectionBuilder
     {
