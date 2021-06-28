@@ -1,3 +1,16 @@
+- [lit-redis](#lit-redis)
+- [Setup](#setup)
+- [Usage](#usage)
+  - [Caching](#caching)
+    - [PutAsync(string key, SampleCacheObject model, TimeSpan? expiry, CancellationToken cancellationToken)](#putasyncstring-key-samplecacheobject-model-timespan-expiry-cancellationtoken-cancellationtoken)
+    - [GetAsync(string key, CancellationToken cancellationToken)](#getasyncstring-key-cancellationtoken-cancellationtoken)
+  - [Distributed locking](#distributed-locking)
+    - [With wait](#with-wait)
+      - [Default](#default)
+      - [Wait forever](#wait-forever)
+      - [Set the wait increase, timeout, and interval](#set-the-wait-increase-timeout-and-interval)
+    - [No wait](#no-wait)
+
 # lit-redis
 A C# managed Redis Library for doing caching, locking, and concurrency
 
