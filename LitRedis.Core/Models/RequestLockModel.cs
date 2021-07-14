@@ -39,7 +39,7 @@ namespace LitRedis.Core.Models
         /// <summary>
         /// Sets value indicating how long to wait to grab the lock. specify null to wait forever.
         /// </summary>
-        /// <param name="renewLockInterval">How long to wait to get the lock.</param>
+        /// <param name="waitTimeout">How long to wait to get the lock.</param>
         /// <returns>The request lock model</returns>
         public RequestLockModel WithLockWaitTimeout(TimeSpan waitTimeout)
         {
