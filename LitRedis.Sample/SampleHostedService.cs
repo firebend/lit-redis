@@ -1,7 +1,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using LitRedis.Core;
 using LitRedis.Core.Interfaces;
 using LitRedis.Core.Models;
 using Microsoft.Extensions.Hosting;
