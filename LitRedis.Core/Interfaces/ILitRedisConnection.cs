@@ -1,11 +1,10 @@
 using StackExchange.Redis;
 
-namespace LitRedis.Core.Interfaces
-{
-    public interface ILitRedisConnection
-    {
-        void ForceReconnect();
+namespace LitRedis.Core.Interfaces;
 
-        ConnectionMultiplexer GetConnectionMultiplexer();
-    }
+public interface ILitRedisConnection
+{
+    void ForceReconnect();
+
+    ConnectionMultiplexer GetConnectionMultiplexer();
 }

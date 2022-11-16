@@ -2,10 +2,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using LitRedis.Core.Models;
 
-namespace LitRedis.Core.Interfaces
+namespace LitRedis.Core.Interfaces;
+
+public interface ILitRedisDistributedLockService
 {
-    public interface ILitRedisDistributedLockService
-    {
-        Task<LitRedisDistributedLockModel> AcquireLockAsync(RequestLockModel model, CancellationToken cancellationToken);
-    }
+    Task<LitRedisDistributedLockModel> AcquireLockAsync(RequestLockModel model, CancellationToken cancellationToken);
 }
