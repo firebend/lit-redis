@@ -44,9 +44,7 @@ public class LitRedisCacheStore : ILitRedisCacheStore
             return;
         }
 
-        var s = model as string;
-
-        var str = s ?? JsonSerializer.Serialize(model);
+        var str = JsonSerializer.Serialize(model);
 
         await _litRedisConnectionService.UseDbAsync((db, _) => db.StringSetAsync(key, str, expiry), cancellationToken);
     }
