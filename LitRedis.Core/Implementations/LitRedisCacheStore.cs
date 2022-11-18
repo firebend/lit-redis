@@ -58,7 +58,7 @@ public class LitRedisCacheStore : ILitRedisCacheStore
 
         var str = await GetAsync(key, cancellationToken);
 
-        return string.IsNullOrWhiteSpace(str) ? default : JsonSerializer.Deserialize<T>(str, new JsonSerializerOptions());
+        return string.IsNullOrWhiteSpace(str) ? default : JsonSerializer.Deserialize<T>(str);
     }
 
     /// <inheritdoc />
