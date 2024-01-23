@@ -16,7 +16,6 @@ ProjectSection(SolutionItems) = preProject
 	LICENSE = LICENSE
 	.editorconfig = .editorconfig
 	.gitignore = .gitignore
-	.config\dotnet-tools.json = .config\dotnet-tools.json
 	.github\workflows\build-and-test.yml = .github\workflows\build-and-test.yml
 	.github\workflows\build-test-and-release.yml = .github\workflows\build-test-and-release.yml
 	.github\ISSUE_TEMPLATE\feature_request.md = .github\ISSUE_TEMPLATE\feature_request.md
