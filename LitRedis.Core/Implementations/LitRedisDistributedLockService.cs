@@ -37,7 +37,7 @@ public class LitRedisDistributedLockService : ILitRedisDistributedLockService
             {
                 var stopped = false;
 
-                var _ = Task.Run(async () =>
+                _ = Task.Run(async () =>
                 {
                     while (!stopped && !cancellationToken.IsCancellationRequested)
                     {
