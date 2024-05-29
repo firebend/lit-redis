@@ -17,8 +17,9 @@ public class LitRedisServiceCollectionBuilder
 
     public LitRedisServiceCollectionBuilder(string connectionString, IServiceCollection serviceCollection)
     {
-        ConnectionString = connectionString;
-        ServiceCollection = serviceCollection;
+        ConnectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+        ServiceCollection = serviceCollection ?? throw new ArgumentNullException(nameof(serviceCollection));
+
         ServiceCollection.TryAddScoped<ILitRedisConnectionMultiplexerProvider, LitRedisConnectionMultiplexerProvider>();
     }
 
@@ -54,6 +55,7 @@ public class LitRedisServiceCollectionBuilder
 
         ServiceCollection.TryAddScoped<ILitRedisDistributedLock, LitRedisDistributedLock>();
         ServiceCollection.TryAddScoped<ILitRedisDistributedLockService, LitRedisDistributedLockService>();
+
         return this;
     }
 }
