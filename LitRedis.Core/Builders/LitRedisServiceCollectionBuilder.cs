@@ -11,6 +11,7 @@ namespace LitRedis.Core.Builders;
 
 public class LitRedisServiceCollectionBuilder
 {
+    private bool _cacheAdded;
     public string ConnectionString { get; }
     public IServiceCollection ServiceCollection { get; }
 
@@ -39,11 +40,18 @@ public class LitRedisServiceCollectionBuilder
             configureHybridCache?.Invoke(opt);
         });
 
+        _cacheAdded = true;
+
         return this;
     }
 
     public LitRedisServiceCollectionBuilder WithLocking()
     {
+        if (_cacheAdded is false)
+        {
+            throw new Exception("Please add caching before adding locking");
+        }
+
         ServiceCollection.TryAddScoped<ILitRedisDistributedLock, LitRedisDistributedLock>();
         ServiceCollection.TryAddScoped<ILitRedisDistributedLockService, LitRedisDistributedLockService>();
         return this;
