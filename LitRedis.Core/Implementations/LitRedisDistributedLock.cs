@@ -1,7 +1,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using LitRedis.Core.Builders;
 using LitRedis.Core.Interfaces;
 using StackExchange.Redis;
 

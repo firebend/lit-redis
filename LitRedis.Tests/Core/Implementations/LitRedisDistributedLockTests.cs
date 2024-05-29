@@ -1,10 +1,8 @@
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
 using AutoFixture.AutoMoq;
 using FluentAssertions;
-using LitRedis.Core.Builders;
 using LitRedis.Core.Implementations;
 using LitRedis.Core.Interfaces;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
