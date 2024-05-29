@@ -24,7 +24,7 @@ public class LitRedisDistributedLockService : ILitRedisDistributedLockService
         CancellationToken cancellationToken)
     {
         var token = Guid.NewGuid().ToString();
-        var waitForever = requestLockModel.WaitTimeout == null;
+        var waitForever = requestLockModel.WaitTimeout is null;
         var startTime = DateTime.Now;
         var stopTimeTicks = waitForever ? 0 : startTime.Add(requestLockModel.WaitTimeout.GetValueOrDefault()).Ticks;
         var rnd = new Random();

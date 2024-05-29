@@ -32,7 +32,7 @@ public class LitRedisCacheStore : ILitRedisCacheStore
     {
         KeyGuard(key);
 
-        if (model == null || model.Equals(default(T)))
+        if (model is null || model.Equals(default(T)))
         {
             await ClearAsync(key, cancellationToken);
 
