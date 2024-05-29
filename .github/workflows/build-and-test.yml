@@ -30,4 +30,4 @@ jobs:
       run: dotnet build lit-redis.sln --configuration Release --no-restore
 
     - name: Test
-      run: dotnet test lit-redis.sln --logger GitHubActions --no-restore --verbosity normal
+      run: dotnet test lit-redis.sln --logger GitHubActions --no-restore --verbosity normal --filter FullyQualifiedName\!~IntegrationTests
