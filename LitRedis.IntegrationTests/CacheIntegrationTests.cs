@@ -20,7 +20,7 @@ public class CacheIntegrationTests
     public CacheIntegrationTests()
     {
         var serviceCollection = new ServiceCollection();
-        serviceCollection.AddLitRedis("localhost:6379,defaultDatabase=0", redis => redis.WithCaching().WithLocking());
+        serviceCollection.AddLitRedis("localhost:6379,defaultDatabase=0", redis => redis.WithCaching());
 
         var serviceProvider = serviceCollection.BuildServiceProvider();
 

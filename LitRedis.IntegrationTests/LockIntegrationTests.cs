@@ -15,7 +15,7 @@ public class LockIntegrationTests
     {
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddLogging(_ => { });
-        serviceCollection.AddLitRedis("localhost:6379,defaultDatabase=0", redis => redis.WithCaching().WithLocking());
+        serviceCollection.AddLitRedis("localhost:6379,defaultDatabase=0", redis => redis.WithLocking());
 
         var serviceProvider = serviceCollection.BuildServiceProvider();
 
