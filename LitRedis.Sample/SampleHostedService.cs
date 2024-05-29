@@ -154,7 +154,7 @@ namespace LitRedis.Sample
                 var second = await _redisCacheStore.GetAsync<SampleCacheObject>(key, stoppingToken);
                 _logger.LogInformation("On pulling second: {@Second}", second?.Phrase);
 
-                await _redisCacheStore.SetExpiryAsync(key, TimeSpan.FromSeconds(5), stoppingToken);
+                await _redisCacheStore.SetExpiryAsync<SampleCacheObject>(key, TimeSpan.FromSeconds(5), stoppingToken);
                 await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
 
                 var expired = await _redisCacheStore.GetAsync<SampleCacheObject>(key, stoppingToken);

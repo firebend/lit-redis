@@ -27,6 +27,16 @@ public class LitRedisCacheStore : ILitRedisCacheStore
         }
     }
 
+    private static HybridCacheEntryOptions GetExpiryOptions(TimeSpan? expiry)
+    {
+        if (expiry is null)
+        {
+            return null;
+        }
+
+        return new() { Expiration = expiry, LocalCacheExpiration = expiry / 2 };
+    }
+
     /// <inheritdoc />
     public async Task PutAsync<T>(string key, T model, TimeSpan? expiry, CancellationToken cancellationToken)
     {
@@ -41,7 +51,7 @@ public class LitRedisCacheStore : ILitRedisCacheStore
 
         await _hybridCache.SetAsync(key,
             model,
-            new () { Expiration = expiry, LocalCacheExpiration = expiry },
+            GetExpiryOptions(expiry),
             null,
             cancellationToken);
     }
@@ -54,7 +64,6 @@ public class LitRedisCacheStore : ILitRedisCacheStore
         var result = await _hybridCache.GetOrCreateAsync<T>(key, _ => default, null, null, cancellationToken);
         return result;
     }
-
 
     /// <inheritdoc />
     public async Task ClearAsync(string key, CancellationToken cancellationToken)
@@ -80,15 +89,15 @@ public class LitRedisCacheStore : ILitRedisCacheStore
         await _hybridCache.RemoveKeysAsync(keys, cancellationToken);
     }
 
-    public async Task SetExpiryAsync(string key, TimeSpan span, CancellationToken cancellationToken)
+    public async Task SetExpiryAsync<T>(string key, TimeSpan span, CancellationToken cancellationToken)
     {
-        var found = await GetAsync<object>(key, cancellationToken);
+        var found = await GetAsync<T>(key, cancellationToken);
 
         if (found is not null)
         {
             await _hybridCache.SetAsync(key,
                 found,
-                new(){ Expiration = span, LocalCacheExpiration = span},
+                GetExpiryOptions(span),
                 null,
                 cancellationToken);
         }

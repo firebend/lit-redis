@@ -5,6 +5,7 @@ using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using StackExchange.Redis;
 
 namespace LitRedis.Core.Builders;
 
@@ -29,7 +30,7 @@ public class LitRedisServiceCollectionBuilder
 
         ServiceCollection.AddStackExchangeRedisCache(opt =>
         {
-            opt.Configuration = ConnectionString;
+            opt.ConfigurationOptions = ConfigurationOptions.Parse(ConnectionString, true);
             configureRedis?.Invoke(opt);
         });
 

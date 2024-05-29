@@ -17,5 +17,5 @@ public interface ILitRedisCacheStore
 
     Task ClearAllAsync(CancellationToken cancellationToken);
 
-    Task SetExpiryAsync(string key, TimeSpan span, CancellationToken cancellationToken);
+    Task SetExpiryAsync<T>(string key, TimeSpan span, CancellationToken cancellationToken);
 }
