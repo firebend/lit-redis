@@ -34,7 +34,11 @@ public class LitRedisCacheStore : ILitRedisCacheStore
             return null;
         }
 
-        return new() { Expiration = expiry, LocalCacheExpiration = expiry / 2 };
+        return new()
+        {
+            Expiration = expiry,
+            LocalCacheExpiration = expiry / 2,
+        };
     }
 
     /// <inheritdoc />
