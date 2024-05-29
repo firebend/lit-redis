@@ -1,15 +1,11 @@
-using System;
-using System.Text.Json;
-using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
 using AutoFixture.AutoMoq;
 using FluentAssertions;
 using LitRedis.Core.Implementations;
-using LitRedis.Core.Interfaces;
+using LitRedis.Tests.Mocks;
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
-using StackExchange.Redis;
 
 namespace LitRedis.Tests.Core.Implementations;
 
@@ -25,41 +21,13 @@ public class LitRedisCacheStoreTests
     public async Task Lit_Redis_Cache_Store_Should_Get_Value()
     {
         //arrange
-        var fixture = new Fixture();
-        fixture.Customize(new AutoMoqCustomization());
-
-        var mockRedisConnectionService = fixture.Freeze<Mock<ILitRedisConnectionService>>();
-
-        mockRedisConnectionService.Setup(x =>
-                x.UseDbAsync(It.IsAny<Func<IDatabase, CancellationToken, Task<RedisValue>>>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new RedisValue("fake"));
-
-        var cacheStore = fixture.Create<LitRedisCacheStore>();
-
-        //act
-        var value = await cacheStore.GetAsync("fake-key", default);
-
-        //assert
-        value.Should().Be("fake");
-
-        mockRedisConnectionService.Verify(x =>
-            x.UseDbAsync(It.IsAny<Func<IDatabase, CancellationToken, Task<RedisValue>>>(), It.IsAny<CancellationToken>()), Times.Once);
-    }
-
-    [TestMethod]
-    public async Task Lit_Redis_Cache_Store_Should_Get_Value_Object()
-    {
-        //arrange
         var cacheValue = new FakeCacheObject { Value = "Fakey Fake" };
+        var cache = new HybridCacheMock();
+        await cache.SetAsync("fake-key", cacheValue);
 
         var fixture = new Fixture();
         fixture.Customize(new AutoMoqCustomization());
-
-        var mockRedisConnectionService = fixture.Freeze<Mock<ILitRedisConnectionService>>();
-
-        mockRedisConnectionService.Setup(x =>
-                x.UseDbAsync(It.IsAny<Func<IDatabase, CancellationToken, Task<RedisValue>>>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new RedisValue(JsonSerializer.Serialize(cacheValue)));
+        fixture.Inject<HybridCache>(cache);
 
         var cacheStore = fixture.Create<LitRedisCacheStore>();
 
@@ -69,9 +37,6 @@ public class LitRedisCacheStoreTests
         //assert
         value.Should().NotBeNull();
         value.Value.Should().Be("Fakey Fake");
-
-        mockRedisConnectionService.Verify(x =>
-            x.UseDbAsync(It.IsAny<Func<IDatabase, CancellationToken, Task<RedisValue>>>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [TestMethod]
@@ -79,15 +44,11 @@ public class LitRedisCacheStoreTests
     {
         //arrange
         var cacheValue = new FakeCacheObject { Value = "Fakey Fake" };
+        var cacheMock = new HybridCacheMock();
 
         var fixture = new Fixture();
         fixture.Customize(new AutoMoqCustomization());
-
-        var mockRedisConnectionService = fixture.Freeze<Mock<ILitRedisConnectionService>>();
-
-        mockRedisConnectionService.Setup(x =>
-                x.UseDbAsync(It.IsAny<Func<IDatabase, CancellationToken, Task<bool>>>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
+        fixture.Inject<HybridCache>(cacheMock);
 
         var cacheStore = fixture.Create<LitRedisCacheStore>();
 
@@ -95,7 +56,6 @@ public class LitRedisCacheStoreTests
         await cacheStore.PutAsync("fake-key", cacheValue, null, default);
 
         //assert
-        mockRedisConnectionService.Verify(x =>
-            x.UseDbAsync(It.IsAny<Func<IDatabase, CancellationToken, Task<bool>>>(), It.IsAny<CancellationToken>()), Times.Once);
+        cacheMock.Dictionary["fake-key"].Should().NotBeNull();
     }
 }

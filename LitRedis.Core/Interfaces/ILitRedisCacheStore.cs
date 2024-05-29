@@ -11,8 +11,6 @@ public interface ILitRedisCacheStore
 
     Task<T> GetAsync<T>(string key, CancellationToken cancellationToken);
 
-    Task<string> GetAsync(string key, CancellationToken cancellationToken);
-
     Task ClearAsync(string key, CancellationToken cancellationToken);
 
     Task<IEnumerable<string>> GetAllKeys(CancellationToken cancellationToken);

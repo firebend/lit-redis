@@ -1,17 +1,26 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using LitRedis.Core.Builders;
 using LitRedis.Core.Interfaces;
+using StackExchange.Redis;
 
 namespace LitRedis.Core.Implementations;
 
 public class LitRedisDistributedLock : ILitRedisDistributedLock
 {
-    private readonly ILitRedisConnectionService _litRedisConnectionService;
+    private readonly ILitRedisConnectionMultiplexerProvider _connectionMultiplexer;
 
-    public LitRedisDistributedLock(ILitRedisConnectionService litRedisConnectionService)
+    public LitRedisDistributedLock(ILitRedisConnectionMultiplexerProvider connectionMultiplexer)
     {
-        _litRedisConnectionService = litRedisConnectionService;
+        _connectionMultiplexer = connectionMultiplexer;
+    }
+
+    private async Task<IDatabase> GetDatabaseAsync()
+    {
+        var conn = await _connectionMultiplexer.GetConnectionMultiplexerAsync();
+
+        return conn.GetDatabase();
     }
 
     private static void KeyGuard(string key)
@@ -22,30 +31,27 @@ public class LitRedisDistributedLock : ILitRedisDistributedLock
         }
     }
 
-    public Task<bool> TakeLockAsync(string key, string token, TimeSpan expiryTime, CancellationToken cancellationToken)
+    public async Task<bool> TakeLockAsync(string key, string token, TimeSpan expiryTime, CancellationToken cancellationToken)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-
         KeyGuard(key);
 
-        return _litRedisConnectionService.UseDbAsync((db, _) => db.LockTakeAsync(key, token, expiryTime), cancellationToken);
+        var db = await GetDatabaseAsync();
+        return await db.LockTakeAsync(key, token, expiryTime);
     }
 
-    public Task<bool> ReleaseLockAsync(string key, string token, CancellationToken cancellationToken)
+    public async Task<bool> ReleaseLockAsync(string key, string token, CancellationToken cancellationToken)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-
         KeyGuard(key);
 
-        return _litRedisConnectionService.UseDbAsync((db, _) => db.LockReleaseAsync(key, token), cancellationToken);
+        var db = await GetDatabaseAsync();
+        return await db.LockReleaseAsync(key, token);
     }
 
-    public Task<bool> ExtendLockAsync(string key, string token, TimeSpan expiryTime, CancellationToken cancellationToken)
+    public async Task<bool> ExtendLockAsync(string key, string token, TimeSpan expiryTime, CancellationToken cancellationToken)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-
         KeyGuard(key);
 
-        return _litRedisConnectionService.UseDbAsync((db, _) => db.LockExtendAsync(key, token, expiryTime), cancellationToken);
+        var db = await GetDatabaseAsync();
+        return await db.LockExtendAsync(key, token, expiryTime);
     }
 }

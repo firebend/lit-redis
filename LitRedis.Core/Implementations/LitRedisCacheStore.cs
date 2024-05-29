@@ -1,24 +1,23 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using LitRedis.Core.Builders;
 using LitRedis.Core.Interfaces;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Primitives;
+using Microsoft.Extensions.Caching.Hybrid;
 
 namespace LitRedis.Core.Implementations;
 
 public class LitRedisCacheStore : ILitRedisCacheStore
 {
-    private readonly IMemoryCache _cache;
-    private readonly ILitRedisConnectionService _litRedisConnectionService;
+    private readonly HybridCache _hybridCache;
+    private readonly ILitRedisConnectionMultiplexerProvider _connectionMultiplexerProvider;
 
-    public LitRedisCacheStore(IMemoryCache cache, ILitRedisConnectionService litRedisConnectionService)
+    public LitRedisCacheStore(HybridCache hybridCache, ILitRedisConnectionMultiplexerProvider connectionMultiplexerProvider)
     {
-        _cache = cache;
-        _litRedisConnectionService = litRedisConnectionService;
+        _hybridCache = hybridCache;
+        _connectionMultiplexerProvider = connectionMultiplexerProvider;
     }
 
     private static void KeyGuard(string key)
@@ -32,8 +31,6 @@ public class LitRedisCacheStore : ILitRedisCacheStore
     /// <inheritdoc />
     public async Task PutAsync<T>(string key, T model, TimeSpan? expiry, CancellationToken cancellationToken)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-
         KeyGuard(key);
 
         if (model == null || model.Equals(default(T)))
@@ -43,73 +40,58 @@ public class LitRedisCacheStore : ILitRedisCacheStore
             return;
         }
 
-        var str = JsonSerializer.Serialize(model);
-
-        await _litRedisConnectionService.UseDbAsync((db, _) => db.StringSetAsync(key, str, expiry), cancellationToken);
+        await _hybridCache.SetAsync(key,
+            model,
+            new () { Expiration = expiry, LocalCacheExpiration = expiry },
+            null,
+            cancellationToken);
     }
 
     /// <inheritdoc />
     public async Task<T> GetAsync<T>(string key, CancellationToken cancellationToken)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-
         KeyGuard(key);
 
-        var str = await GetAsync(key, cancellationToken);
-
-        return string.IsNullOrWhiteSpace(str) ? default : JsonSerializer.Deserialize<T>(str);
+        var result = await _hybridCache.GetOrCreateAsync<T>(key, _ => default, null, null, cancellationToken);
+        return result;
     }
 
-    /// <inheritdoc />
-    public async Task<string> GetAsync(string key, CancellationToken cancellationToken)
-    {
-        cancellationToken.ThrowIfCancellationRequested();
-
-        KeyGuard(key);
-
-        if (_cache.TryGetValue<string>(key, out var value))
-        {
-            return value;
-        }
-
-        if (_cache.TryGetValue<string>(key, out var value2))
-        {
-            return value2;
-        }
-
-        var str = await _litRedisConnectionService.UseDbAsync(
-            (db, _) => db.StringGetAsync(key), cancellationToken);
-
-        var cacheEntryOptions = new MemoryCacheEntryOptions()
-            .AddExpirationToken(
-                new CancellationChangeToken(
-                    new CancellationTokenSource(TimeSpan.FromSeconds(10)).Token));
-
-        _cache.Set(key, str, cacheEntryOptions);
-
-        return str;
-    }
 
     /// <inheritdoc />
     public async Task ClearAsync(string key, CancellationToken cancellationToken)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-
         KeyGuard(key);
 
-        _cache.Remove(key);
+        await _hybridCache.RemoveKeyAsync(key, cancellationToken);
+    }
 
-        await _litRedisConnectionService.UseDbAsync((db, _) => db.KeyDeleteAsync(key), cancellationToken);
+    public async Task<IEnumerable<string>> GetAllKeys(CancellationToken cancellationToken)
+    {
+        var conn = await _connectionMultiplexerProvider.GetConnectionMultiplexerAsync();
+        var server = conn.GetServers().First();
+        var keys = server.Keys().Select(x => x.ToString());
+        return keys;
     }
 
     /// <inheritdoc />
-    public Task<IEnumerable<string>> GetAllKeys(CancellationToken cancellationToken) =>
-        _litRedisConnectionService.UseServerAsync((server, _) => Task.FromResult(server.Keys().Select(x => x.ToString())), cancellationToken);
+    public async Task ClearAllAsync(CancellationToken cancellationToken)
+    {
+        var keys = await GetAllKeys(cancellationToken);
 
-    /// <inheritdoc />
-    public Task ClearAllAsync(CancellationToken cancellationToken) =>
-        _litRedisConnectionService.UseServerAsync((server, _) => server.FlushAllDatabasesAsync(), cancellationToken);
+        await _hybridCache.RemoveKeysAsync(keys, cancellationToken);
+    }
 
-    public Task SetExpiryAsync(string key, TimeSpan span, CancellationToken cancellationToken) =>
-        _litRedisConnectionService.UseDbAsync((db, _) => db.KeyExpireAsync(key, span), cancellationToken);
+    public async Task SetExpiryAsync(string key, TimeSpan span, CancellationToken cancellationToken)
+    {
+        var found = await GetAsync<object>(key, cancellationToken);
+
+        if (found is not null)
+        {
+            await _hybridCache.SetAsync(key,
+                found,
+                new(){ Expiration = span, LocalCacheExpiration = span},
+                null,
+                cancellationToken);
+        }
+    }
 }

@@ -41,7 +41,21 @@ namespace LitRedis.Sample
                     DoLockSample(stoppingToken),
                     DoLockSample(stoppingToken)
                 };
+
                 await Task.WhenAll(tasks);
+
+                await _redisCacheStore.PutAsync("gone", new SampleCacheObject(), TimeSpan.FromMinutes(5), stoppingToken);
+
+                var shouldNotBeGone = await _redisCacheStore.GetAsync<SampleCacheObject>("gone", stoppingToken);
+                _logger.LogInformation("Should not be gone: {@NotGone}", shouldNotBeGone);
+
+                await _redisCacheStore.ClearAllAsync(stoppingToken);
+
+                _logger.LogInformation("Cleared all cache");
+
+                var shouldBeGone = await _redisCacheStore.GetAsync<SampleCacheObject>("gone", stoppingToken);
+                _logger.LogInformation("Should be gone: {@Gone}", shouldBeGone);
+
             }
         }
 
@@ -55,18 +69,21 @@ namespace LitRedis.Sample
                     .WithKey("lit-sample-no-wait")
                     .WaitForever();
 
-                await using var locker = await _redisDistributedLockService.AcquireLockAsync(waitModel, stoppingToken);
+                var locker = await _redisDistributedLockService.AcquireLockAsync(waitModel, stoppingToken);
 
                 if (locker.Succeeded)
                 {
                     _logger.LogInformation("I'm the lock master back off {@Id}", myId);
                     await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
+                    await locker.DisposeAsync();
                 }
             }, stoppingToken);
 
 
             var dontGetIt = Task.Run(async () =>
             {
+                await Task.Delay(500, stoppingToken);
+
                 var myId = Guid.NewGuid();
 
                 var waitModel = RequestLockModel
@@ -125,15 +142,23 @@ namespace LitRedis.Sample
         {
             try
             {
-                var first = await _redisCacheStore.GetAsync<SampleCacheObject>("one", stoppingToken);
+                const string key = "one";
+
+                var first = await _redisCacheStore.GetAsync<SampleCacheObject>(key, stoppingToken);
                 _logger.LogInformation("On pulling first: {@First}", first?.Phrase);
 
-                await _redisCacheStore.PutAsync("one", new SampleCacheObject(), TimeSpan.FromMinutes(5), stoppingToken);
+                await _redisCacheStore.PutAsync(key, new SampleCacheObject(), TimeSpan.FromMinutes(5), stoppingToken);
 
                 _logger.LogInformation("Put it");
 
-                var second = await _redisCacheStore.GetAsync<SampleCacheObject>("one", stoppingToken);
+                var second = await _redisCacheStore.GetAsync<SampleCacheObject>(key, stoppingToken);
                 _logger.LogInformation("On pulling second: {@Second}", second?.Phrase);
+
+                await _redisCacheStore.SetExpiryAsync(key, TimeSpan.FromSeconds(5), stoppingToken);
+                await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
+
+                var expired = await _redisCacheStore.GetAsync<SampleCacheObject>(key, stoppingToken);
+                _logger.LogInformation("On pulling expired: {@Expired}", expired?.Phrase);
             }
             catch (Exception ex)
             {
