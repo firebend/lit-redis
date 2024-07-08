@@ -19,6 +19,7 @@ public class LitRedisServiceCollectionBuilder
         ServiceCollection = serviceCollection;
 
         serviceCollection.TryAddSingleton(_litRedisOptions);
+        serviceCollection.TryAddSingleton<ILitRedisJsonSerializer, LitRedisSystemTextJsonSerializer>();
         serviceCollection.TryAddSingleton<ILitRedisSystemTextJsonOptionsProvider>(new DefaultLitRedisSystemTextJsonOptionsProvider(_jsonOptions));
         serviceCollection.TryAddSingleton<ILitRedisConnection, LitLitRedisConnection>();
         serviceCollection.TryAddScoped<ILitRedisConnectionService, LitRedisConnectionService>();
