@@ -49,6 +49,13 @@ public class LitRedisServiceCollectionBuilder
         return this;
     }
 
+    public LitRedisServiceCollectionBuilder WithJsonSerializer<T>() where T : class, ILitRedisJsonSerializer
+    {
+        ServiceCollection.RemoveAll<ILitRedisJsonSerializer>();
+        ServiceCollection.TryAddSingleton<ILitRedisJsonSerializer, T>();
+        return this;
+    }
+
     public LitRedisServiceCollectionBuilder WithJsonOptions(Action<JsonSerializerOptions> configure)
     {
         configure(_jsonOptions);
