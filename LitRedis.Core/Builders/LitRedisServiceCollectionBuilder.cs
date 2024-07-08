@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json;
 using LitRedis.Core.Implementations;
 using LitRedis.Core.Interfaces;
 using LitRedis.Core.Models;
@@ -11,11 +12,14 @@ public class LitRedisServiceCollectionBuilder
 {
     public IServiceCollection ServiceCollection { get; }
     private readonly LitRedisOptions _litRedisOptions = new();
+    private readonly JsonSerializerOptions _jsonOptions = new(JsonSerializerDefaults.Web);
 
     public LitRedisServiceCollectionBuilder(IServiceCollection serviceCollection)
     {
         ServiceCollection = serviceCollection;
+
         serviceCollection.TryAddSingleton(_litRedisOptions);
+        serviceCollection.TryAddSingleton<ILitRedisSystemTextJsonOptionsProvider>(new DefaultLitRedisSystemTextJsonOptionsProvider(_jsonOptions));
         serviceCollection.TryAddSingleton<ILitRedisConnection, LitLitRedisConnection>();
         serviceCollection.TryAddScoped<ILitRedisConnectionService, LitRedisConnectionService>();
     }
@@ -41,6 +45,12 @@ public class LitRedisServiceCollectionBuilder
     public LitRedisServiceCollectionBuilder WithLitRedisOptions(Action<LitRedisOptions> configure)
     {
         configure(_litRedisOptions);
+        return this;
+    }
+
+    public LitRedisServiceCollectionBuilder WithJsonOptions(Action<JsonSerializerOptions> configure)
+    {
+        configure(_jsonOptions);
         return this;
     }
 }

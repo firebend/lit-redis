@@ -7,7 +7,8 @@ namespace LitRedis.Core;
 //todo: test
 public static class ServiceProviderExtensions
 {
-    public static IServiceCollection AddLitRedis(this IServiceCollection serviceCollection,
+    public static IServiceCollection AddLitRedis(
+        this IServiceCollection serviceCollection,
         Action<LitRedisServiceCollectionBuilder> configure)
     {
         var builder = new LitRedisServiceCollectionBuilder(serviceCollection);
