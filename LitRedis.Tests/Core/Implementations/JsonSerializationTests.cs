@@ -9,7 +9,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace LitRedis.Tests.Core.Implementations;
 
-class SampleClass
+internal class SampleClass
 {
     public string Name { get; set; }
     public int Age { get; set; }
