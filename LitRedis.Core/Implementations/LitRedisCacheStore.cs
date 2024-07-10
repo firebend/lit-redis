@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using LitRedis.Core.Interfaces;
@@ -14,11 +13,15 @@ public class LitRedisCacheStore : ILitRedisCacheStore
 {
     private readonly IMemoryCache _cache;
     private readonly ILitRedisConnectionService _litRedisConnectionService;
+    private readonly ILitRedisJsonSerializer _jsonSerializer;
 
-    public LitRedisCacheStore(IMemoryCache cache, ILitRedisConnectionService litRedisConnectionService)
+    public LitRedisCacheStore(IMemoryCache cache,
+        ILitRedisConnectionService litRedisConnectionService,
+        ILitRedisJsonSerializer jsonSerializer)
     {
         _cache = cache;
         _litRedisConnectionService = litRedisConnectionService;
+        _jsonSerializer = jsonSerializer;
     }
 
     private static void KeyGuard(string key)
@@ -43,9 +46,9 @@ public class LitRedisCacheStore : ILitRedisCacheStore
             return;
         }
 
-        var str = JsonSerializer.Serialize(model);
+        var json = _jsonSerializer.Serialize(model);
 
-        await _litRedisConnectionService.UseDbAsync((db, _) => db.StringSetAsync(key, str, expiry), cancellationToken);
+        await _litRedisConnectionService.UseDbAsync((db, _) => db.StringSetAsync(key, json, expiry), cancellationToken);
     }
 
     /// <inheritdoc />
@@ -57,7 +60,7 @@ public class LitRedisCacheStore : ILitRedisCacheStore
 
         var str = await GetAsync(key, cancellationToken);
 
-        return string.IsNullOrWhiteSpace(str) ? default : JsonSerializer.Deserialize<T>(str);
+        return string.IsNullOrWhiteSpace(str) ? default : _jsonSerializer.Deserialize<T>(str);
     }
 
     /// <inheritdoc />
