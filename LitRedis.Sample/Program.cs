@@ -23,7 +23,10 @@ namespace LitRedis.Sample
             .ConfigureServices((_, services) =>
             {
                 services
-                    .AddLitRedis(redis => redis.WithCaching().WithLocking().WithConnectionString("localhost:6379,defaultDatabase=0"))
+                    .AddLitRedis(redis => redis
+                        .WithCaching()
+                        .WithLocking()
+                        .WithConnectionString("localhost:6379,defaultDatabase=0"))
                     .AddHostedService<SampleHostedService>()
                     .AddLogging(o => o.AddSimpleConsole(c => c.TimestampFormat = "[yyy-MM-dd HH:mm:ss] "));
             });

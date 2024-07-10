@@ -57,6 +57,8 @@ public class LitRedisCacheStoreTests
 
         var mockRedisConnectionService = fixture.Freeze<Mock<ILitRedisConnectionService>>();
 
+        fixture.Inject<ILitRedisJsonSerializer>(new LitRedisSystemTextJsonSerializer(new DefaultLitRedisSystemTextJsonOptionsProvider(new JsonSerializerOptions(JsonSerializerDefaults.Web))));
+
         mockRedisConnectionService.Setup(x =>
                 x.UseDbAsync(It.IsAny<Func<IDatabase, CancellationToken, Task<RedisValue>>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new RedisValue(JsonSerializer.Serialize(cacheValue)));
