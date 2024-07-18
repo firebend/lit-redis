@@ -33,12 +33,13 @@ public class HybridCacheMock : HybridCache
         return ValueTask.CompletedTask;
     }
 
-    public override ValueTask RemoveKeyAsync(string key, CancellationToken token = new())
+    public override ValueTask RemoveAsync(string key, CancellationToken token = default)
     {
         Dictionary.Remove(key);
         return ValueTask.CompletedTask;
     }
 
-    public override ValueTask RemoveTagAsync(string tag, CancellationToken token = new())
+    public override ValueTask RemoveByTagAsync(string tag, CancellationToken token = default)
         => ValueTask.CompletedTask;
+
 }

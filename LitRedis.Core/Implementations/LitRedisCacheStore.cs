@@ -74,7 +74,7 @@ public class LitRedisCacheStore : ILitRedisCacheStore
     {
         KeyGuard(key);
 
-        await _hybridCache.RemoveKeyAsync(key, cancellationToken);
+        await _hybridCache.RemoveAsync(key, cancellationToken);
     }
 
     public async Task<IEnumerable<string>> GetAllKeys(CancellationToken cancellationToken)
@@ -90,7 +90,7 @@ public class LitRedisCacheStore : ILitRedisCacheStore
     {
         var keys = await GetAllKeys(cancellationToken);
 
-        await _hybridCache.RemoveKeysAsync(keys, cancellationToken);
+        await _hybridCache.RemoveAsync(keys, cancellationToken);
     }
 
     public async Task SetExpiryAsync<T>(string key, TimeSpan span, CancellationToken cancellationToken)
