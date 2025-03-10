@@ -1,10 +1,13 @@
+#nullable enable
 using System;
+using System.Threading.Tasks;
+using StackExchange.Redis;
 
 namespace LitRedis.Core.Models;
 
 public class LitRedisOptions
 {
-    public string ConnectionString { get; set; }
+    public string ConnectionString { get; set; } = null!;
 
     public int RedisDeltaBackOffMilliseconds { get; set; } = 5_000;
     public int RedisAsyncTimeout { get; set; } = 10_000;
@@ -18,4 +21,6 @@ public class LitRedisOptions
     // if errors continue for longer than the below threshold, then the
     // multiplexer seems to not be reconnecting, so re-create the multiplexer
     public TimeSpan ReconnectErrorThreshold { get; set; } = TimeSpan.FromSeconds(30);
+
+    public Func<ConfigurationOptions, Task<ConfigurationOptions>>? ConfigurationOptionsFactory { get; set; }
 }

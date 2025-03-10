@@ -39,7 +39,6 @@ public class LitRedisServiceCollectionBuilder
         return this;
     }
 
-
     public LitRedisServiceCollectionBuilder WithConnectionString(string connString)
         => WithLitRedisOptions(o => o.ConnectionString = connString);
 

@@ -17,7 +17,7 @@ public class LitRedisConnectionService : ILitRedisConnectionService
 
     private string Server { get; }
 
-    private ConnectionMultiplexer Connection => _litRedisConnection.GetConnectionMultiplexer();
+    private Task<ConnectionMultiplexer> Connection => _litRedisConnection.GetConnectionMultiplexer();
 
     public LitRedisConnectionService(
         ILitRedisConnection litRedisConnection,
@@ -41,7 +41,7 @@ public class LitRedisConnectionService : ILitRedisConnectionService
     {
         try
         {
-            return await func(Connection, cancellationToken).ConfigureAwait(false);
+            return await func(await Connection, cancellationToken).ConfigureAwait(false);
         }
         catch (Exception e)
         {
@@ -57,7 +57,7 @@ public class LitRedisConnectionService : ILitRedisConnectionService
     {
         try
         {
-            await func(Connection, cancellationToken).ConfigureAwait(false);
+            await func(await Connection, cancellationToken).ConfigureAwait(false);
         }
         catch (Exception e)
         {

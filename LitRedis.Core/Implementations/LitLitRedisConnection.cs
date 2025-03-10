@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 using LitRedis.Core.Interfaces;
 using LitRedis.Core.Models;
 using StackExchange.Redis;
@@ -15,7 +16,7 @@ public class LitLitRedisConnection : ILitRedisConnection
     private long _lastReconnectTicks = DateTimeOffset.MinValue.UtcTicks;
     private DateTimeOffset _firstError = DateTimeOffset.MinValue;
     private DateTimeOffset _previousError = DateTimeOffset.MinValue;
-    private Lazy<ConnectionMultiplexer> _multiplexer;
+    private Lazy<Task<ConnectionMultiplexer>> _multiplexer;
 
     private readonly object _reconnectLock = new();
     private readonly LitRedisOptions _litRedisOptions;
@@ -26,7 +27,7 @@ public class LitLitRedisConnection : ILitRedisConnection
         _multiplexer = CreateMultiplexer();
     }
 
-    public ConnectionMultiplexer GetConnectionMultiplexer() => _multiplexer.Value;
+    public Task<ConnectionMultiplexer> GetConnectionMultiplexer() => _multiplexer.Value;
 
     ///<summary>
     /// Force a new ConnectionMultiplexer to be created.
@@ -76,7 +77,7 @@ public class LitLitRedisConnection : ILitRedisConnection
                 && elapsedSinceMostRecentError <=
                 _litRedisOptions.ReconnectErrorThreshold; //make sure we aren't working on stale data (e.g. if there was a gap in errors, don't reconnect yet).
 
-            // Update the previousError timestamp to be now (e.g. this reconnect request)
+            // Update the previousError timestamp to be now (e.g. this request to reconnect)
             _previousError = utcNow;
 
             if (!shouldReconnect)
@@ -89,23 +90,30 @@ public class LitLitRedisConnection : ILitRedisConnection
 
             var oldMultiplexer = _multiplexer;
             _multiplexer = CreateMultiplexer();
-            CloseMultiplexer(oldMultiplexer);
+            CloseMultiplexer(oldMultiplexer).ConfigureAwait(false).GetAwaiter().GetResult();
             Interlocked.Exchange(ref _lastReconnectTicks, utcNow.UtcTicks);
         }
     }
 
-    private Lazy<ConnectionMultiplexer> CreateMultiplexer()
-        => new(() =>
+    private Lazy<Task<ConnectionMultiplexer>> CreateMultiplexer()
+    {
+        return new Lazy<Task<ConnectionMultiplexer>>(async () =>
         {
             var options = ConfigurationOptions.Parse(_litRedisOptions.ConnectionString);
             options.AsyncTimeout = _litRedisOptions.RedisAsyncTimeout;
             options.ConnectTimeout = _litRedisOptions.RedisConnectTimeout;
             options.SyncTimeout = _litRedisOptions.RedisSyncTimeout;
             options.ReconnectRetryPolicy = new ExponentialRetry(_litRedisOptions.RedisDeltaBackOffMilliseconds);
-            return ConnectionMultiplexer.Connect(options);
-        });
+            if (_litRedisOptions.ConfigurationOptionsFactory != null)
+            {
+                options = await _litRedisOptions.ConfigurationOptionsFactory.Invoke(options);
+            }
 
-    private static void CloseMultiplexer(Lazy<ConnectionMultiplexer> oldMultiplexer)
+            return await ConnectionMultiplexer.ConnectAsync(options);
+        });
+    }
+
+    private static async Task CloseMultiplexer(Lazy<Task<ConnectionMultiplexer>> oldMultiplexer)
     {
         if (oldMultiplexer == null)
         {
@@ -114,7 +122,7 @@ public class LitLitRedisConnection : ILitRedisConnection
 
         try
         {
-            oldMultiplexer.Value.Close();
+            await (await oldMultiplexer.Value).CloseAsync();
         }
         catch (Exception)
         {
