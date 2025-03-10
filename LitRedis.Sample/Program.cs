@@ -25,6 +25,7 @@ namespace LitRedis.Sample
                 services
                     .AddLitRedis(redis => redis
                         .WithCaching()
+                        .WithDistributedCache("litredis-sample")
                         .WithLocking()
                         .WithConnectionString("localhost:6379,defaultDatabase=0"))
                     .AddHostedService<SampleHostedService>()

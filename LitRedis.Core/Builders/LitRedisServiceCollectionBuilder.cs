@@ -32,6 +32,20 @@ public class LitRedisServiceCollectionBuilder
         return this;
     }
 
+    public LitRedisServiceCollectionBuilder WithDistributedCache(string instanceName)
+    {
+        ServiceCollection.AddStackExchangeRedisCache(options =>
+        {
+            options.ConnectionMultiplexerFactory = async () =>
+            {
+                var connection = ServiceCollection.BuildServiceProvider().GetService<ILitRedisConnection>();
+                return await connection.GetConnectionMultiplexer();
+            };
+            options.InstanceName = instanceName;
+        });
+        return this;
+    }
+
     public LitRedisServiceCollectionBuilder WithLocking()
     {
         ServiceCollection.TryAddScoped<ILitRedisDistributedLock, LitRedisDistributedLock>();
