@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <Version>4.1.0</Version>
+    <Version>4.2.0</Version>
     <LangVersion>latestmajor</LangVersion>
   </PropertyGroup>
 
@@ -19,10 +19,10 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.4" />
-    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.13" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.4" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.4" />
     <PackageReference Include="StackExchange.Redis" Version="2.8.31" />
-    <PackageReference Include="System.Text.Json" Version="8.0.5" />
+    <PackageReference Include="System.Text.Json" Version="9.0.4" />
   </ItemGroup>
 
 </Project>
