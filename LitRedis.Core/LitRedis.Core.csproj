@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <Version>4.2.0</Version>
     <LangVersion>latestmajor</LangVersion>
-    <Bumper>1</Bumper>
+    <Bumper>2</Bumper>
   </PropertyGroup>
 
   <PropertyGroup>
