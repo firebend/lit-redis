@@ -10,24 +10,64 @@ jobs:
     name: Build, test, and release
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+
+    - name: Setup Git
+      uses: actions/checkout@v3
+      with:
+        token : ${{ secrets.FIREBEND_GIT_PUSH_PAT}}
+        fetch-depth: 0
+
+    - name: Install Versionize
+      if: steps.versionize.outcome == 'success'
+      run: dotnet tool install --global Versionize
+
+    - name: Versionize Release
+      id: versionize
+      run: versionize --exit-insignificant-commits
+      continue-on-error: true
+
+    - name: Setup git
+      run: |
+        git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+
+    - name: No release required
+      if: steps.versionize.outcome != 'success'
+      run: echo "Skipping publishing. No release required."
 
     - name: Setup .NET Core
+      if: steps.versionize.outcome == 'success'
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 8.0.101
 
     - name: Install dependencies
+      if: steps.versionize.outcome == 'success'
       run: dotnet restore lit-redis.sln
 
     - name: Build
+      if: steps.versionize.outcome == 'success'
       run: dotnet build lit-redis.sln --configuration Release --no-restore
 
     - name: Test
+      if: steps.versionize.outcome == 'success'
       run: dotnet test lit-redis.sln --logger GitHubActions --no-restore --verbosity normal
 
     - name: Pack
+      if: steps.versionize.outcome == 'success'
       run : dotnet pack **/LitRedis.Core.csproj --configuration Release -o out/pack
 
     - name: Publish
+      if: steps.versionize.outcome == 'success'
       run: dotnet nuget push ./out/pack/*.nupkg --api-key  ${{secrets.FIREBEND_NUGET_KEY}} --skip-duplicate --source https://api.nuget.org/v3/index.json
+
+    - name: Push version changes
+      if: steps.versionize.outcome == 'success'
+      uses: CasperWA/push-protected@v2
+      with:
+        token: ${{ secrets.PUSH_TO_PROTECTED_BRANCH }}
+        branch: main
+        tags: true
+        force: true
+        unprotect_reviews: true
+        sleep: 5
