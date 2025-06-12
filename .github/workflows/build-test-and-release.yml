@@ -18,18 +18,17 @@ jobs:
         fetch-depth: 0
 
     - name: Install Versionize
-      if: steps.versionize.outcome == 'success'
       run: dotnet tool install --global Versionize
-
-    - name: Versionize Release
-      id: versionize
-      run: versionize --exit-insignificant-commits
-      continue-on-error: true
 
     - name: Setup git
       run: |
         git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
+
+    - name: Versionize Release
+      id: versionize
+      run: versionize --exit-insignificant-commits
+      continue-on-error: true
 
     - name: No release required
       if: steps.versionize.outcome != 'success'
