@@ -1,4 +1,11 @@
 Lit Redis Changelog
+<a name="4.2.1"></a>
+## [4.2.1](https://www.github.com/firebend/lit-redis/releases/tag/v4.2.1) (2025-06-12)
+
+### Other
+
+* Bump Microsoft.Extensions.Caching.Memory and 8 others ([#130](https://www.github.com/firebend/lit-redis/issues/130)) ([b73b41c](https://www.github.com/firebend/lit-redis/commit/b73b41cce45debdb466df449ea626b6f5eecfd99))
+
 <a name="4.2.0"></a>
 ## [4.2.0](https://www.github.com/firebend/lit-redis/releases/tag/v4.2.0) (2025-06-12)
 
