@@ -64,7 +64,7 @@ jobs:
       if: steps.versionize.outcome == 'success'
       uses: CasperWA/push-protected@v2
       with:
-        token: ${{ secrets.PUSH_TO_PROTECTED_BRANCH }}
+        token: ${{ secrets.FIREBEND_GIT_PUSH_PAT }}
         branch: main
         tags: true
         force: true
