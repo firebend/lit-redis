@@ -1,4 +1,11 @@
 Lit Redis Changelog
+<a name="4.2.2"></a>
+## [4.2.2](https://www.github.com/firebend/lit-redis/releases/tag/v4.2.2) (2025-07-01)
+
+### Other
+
+* Bump FluentAssertions, MSTest.TestAdapter and MSTest.TestFramework ([#132](https://www.github.com/firebend/lit-redis/issues/132)) ([a963df1](https://www.github.com/firebend/lit-redis/commit/a963df12343c79588661f05c2893093479db4ae3))
+
 <a name="4.2.1"></a>
 ## [4.2.1](https://www.github.com/firebend/lit-redis/releases/tag/v4.2.1) (2025-06-12)
 
