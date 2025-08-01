@@ -1,4 +1,11 @@
 Lit Redis Changelog
+<a name="4.2.3"></a>
+## [4.2.3](https://www.github.com/firebend/lit-redis/releases/tag/v4.2.3) (2025-08-01)
+
+### Other
+
+* Bump FluentAssertions and 9 others ([#133](https://www.github.com/firebend/lit-redis/issues/133)) ([fb4d33e](https://www.github.com/firebend/lit-redis/commit/fb4d33ef89f891e94f30002bd2f97fa35b5dd8cd))
+
 <a name="4.2.2"></a>
 ## [4.2.2](https://www.github.com/firebend/lit-redis/releases/tag/v4.2.2) (2025-07-01)
 
