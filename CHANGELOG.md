@@ -1,4 +1,13 @@
 Lit Redis Changelog
+<a name="4.2.4"></a>
+## [4.2.4](https://www.github.com/firebend/lit-redis/releases/tag/v4.2.4) (2025-09-02)
+
+### Other
+
+* Bump FluentAssertions from 8.5.0 to 8.6.0 ([#138](https://www.github.com/firebend/lit-redis/issues/138)) ([f4ce625](https://www.github.com/firebend/lit-redis/commit/f4ce6254d05d640d78951b7790a871ccf5c9896b))
+* Bump Microsoft.Extensions.Caching.Memory from 9.0.7 to 9.0.8 ([#137](https://www.github.com/firebend/lit-redis/issues/137)) ([03f6718](https://www.github.com/firebend/lit-redis/commit/03f6718b21e00c634868f52bf1b130917f1317a8))
+* Bump Microsoft.Extensions.Hosting.Abstractions from 9.0.7 to 9.0.8 ([#136](https://www.github.com/firebend/lit-redis/issues/136)) ([f10aae3](https://www.github.com/firebend/lit-redis/commit/f10aae31169f5a32af26c3093837c054e200a3dd))
+
 <a name="4.2.3"></a>
 ## [4.2.3](https://www.github.com/firebend/lit-redis/releases/tag/v4.2.3) (2025-08-01)
 
