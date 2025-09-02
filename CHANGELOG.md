@@ -1,4 +1,11 @@
 Lit Redis Changelog
+<a name="4.2.5"></a>
+## [4.2.5](https://www.github.com/firebend/lit-redis/releases/tag/v4.2.5) (2025-09-02)
+
+### Other
+
+* Bump Microsoft.Extensions.Caching.StackExchangeRedis from 9.0.7 to 9.0.8 ([#135](https://www.github.com/firebend/lit-redis/issues/135)) ([e62bc88](https://www.github.com/firebend/lit-redis/commit/e62bc885f5723ef437bdf1bc91fd4713fbd7373c))
+
 <a name="4.2.4"></a>
 ## [4.2.4](https://www.github.com/firebend/lit-redis/releases/tag/v4.2.4) (2025-09-02)
 
