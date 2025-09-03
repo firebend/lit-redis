@@ -1,4 +1,11 @@
 Lit Redis Changelog
+<a name="4.2.6"></a>
+## [4.2.6](https://www.github.com/firebend/lit-redis/releases/tag/v4.2.6) (2025-09-03)
+
+### Other
+
+* package updates ([#143](https://www.github.com/firebend/lit-redis/issues/143)) ([a60238d](https://www.github.com/firebend/lit-redis/commit/a60238d98a51754a70597a942bb7c5ab43378ac9))
+
 <a name="4.2.5"></a>
 ## [4.2.5](https://www.github.com/firebend/lit-redis/releases/tag/v4.2.5) (2025-09-02)
 
