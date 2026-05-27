@@ -1,4 +1,15 @@
 Lit Redis Changelog
+<a name="5.0.0"></a>
+## [5.0.0](https://www.github.com/firebend/lit-redis/releases/tag/v5.0.0) (2026-05-27)
+
+### ✨ Features
+
+* new lock lost handling ([99727bf](https://www.github.com/firebend/lit-redis/commit/99727bf7f9929a1ea456382b5c02178cbbd423a9))
+
+### Breaking Changes
+
+* new lock lost handling ([99727bf](https://www.github.com/firebend/lit-redis/commit/99727bf7f9929a1ea456382b5c02178cbbd423a9))
+
 <a name="4.3.0"></a>
 ## [4.3.0](https://www.github.com/firebend/lit-redis/releases/tag/v4.3.0) (2026-05-27)
 
