@@ -35,44 +35,82 @@ public class LitRedisDistributedLockService : ILitRedisDistributedLockService
 
             if (await _litRedisDistributedLock.TakeLockAsync(lockKey, token, requestLockModel.LockIncrease, cancellationToken))
             {
-                var stopped = false;
+                var lockLostCts = new CancellationTokenSource();
+                var stopped = 0;
 
-                _ = Task.Run(async () =>
-                {
-                    while (!stopped && !cancellationToken.IsCancellationRequested)
-                    {
-                        try
-                        {
-                            await _litRedisDistributedLock.ExtendLockAsync(lockKey, token, requestLockModel.LockIncrease, cancellationToken);
-                        }
-                        catch (Exception ex)
-                        {
-                            _logger.LogError(ex, "Extended Distributed Lock Error");
-                        }
+                LitRedisDistributedLockModel model = null;
 
-                        try
-                        {
-                            await Task.Delay(requestLockModel.RenewLockInterval, cancellationToken);
-                        }
-                        catch (TaskCanceledException) { }
-                    }
-                }, cancellationToken);
-
-                return LitRedisDistributedLockModel.Success(
+                model = LitRedisDistributedLockModel.Success(
                     async () =>
                     {
                         try
                         {
-                            //stop the keep alive thread and release the lock
-                            stopped = true;
-                            await _litRedisDistributedLock.ReleaseLockAsync(lockKey, token, cancellationToken);
+                            // stop the keep alive thread and release the lock
+                            Interlocked.Exchange(ref stopped, 1);
+
+                            if (!model.IsLost)
+                            {
+                                await _litRedisDistributedLock.ReleaseLockAsync(lockKey, token, CancellationToken.None);
+                            }
+
                         }
                         catch (Exception ex)
                         {
                             _logger.LogError(ex, "Error releasing lock");
                         }
-                    }
+                    },
+                    lockLostCts,
+                    lockKey
                 );
+
+                _ = Task.Run(async () =>
+                {
+                    var consecutiveFailures = 0;
+
+                    while (Volatile.Read(ref stopped) == 0 && !cancellationToken.IsCancellationRequested)
+                    {
+                        try
+                        {
+                            await Task.Delay(requestLockModel.RenewLockInterval, cancellationToken);
+                        }
+                        catch (TaskCanceledException) { }
+
+                        if (Volatile.Read(ref stopped) != 0 || cancellationToken.IsCancellationRequested)
+                        {
+                            break;
+                        }
+
+                        try
+                        {
+                            var extended = await _litRedisDistributedLock.ExtendLockAsync(lockKey, token, requestLockModel.LockIncrease, cancellationToken);
+                            if (!extended)
+                            {
+                                _logger.LogWarning("Failed to extend distributed lock for key {LockKey}. Lock may have been lost.", lockKey);
+                                model.MarkLost();
+                                break;
+                            }
+
+                            consecutiveFailures = 0;
+                        }
+                        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+                        {
+                            break;
+                        }
+                        catch (Exception ex)
+                        {
+                            consecutiveFailures++;
+                            _logger.LogError(ex, "Extended Distributed Lock Error ({ConsecutiveFailures}/{MaxRetries})", consecutiveFailures, requestLockModel.MaxExtendRetries);
+
+                            if (consecutiveFailures >= requestLockModel.MaxExtendRetries)
+                            {
+                                model.MarkLost();
+                                break;
+                            }
+                        }
+                    }
+                }, cancellationToken);
+
+                return model;
             }
 
             try

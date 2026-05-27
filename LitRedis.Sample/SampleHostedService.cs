@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using LitRedis.Core.Exceptions;
 using LitRedis.Core.Interfaces;
 using LitRedis.Core.Models;
 using Microsoft.Extensions.Caching.Distributed;
@@ -28,6 +29,8 @@ namespace LitRedis.Sample
             await DoDistributedCacheSample(stoppingToken);
 
             await DoLockNoWaitSample(stoppingToken);
+
+            await DoLockLostSample(stoppingToken);
 
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -60,6 +63,7 @@ namespace LitRedis.Sample
                 }
             }, stoppingToken);
 
+            await Task.Delay(TimeSpan.FromSeconds(1), stoppingToken);
 
             var dontGetIt = Task.Run(async () =>
             {
@@ -82,6 +86,55 @@ namespace LitRedis.Sample
             }, stoppingToken);
 
             await Task.WhenAll(getIt, dontGetIt);
+        }
+
+        private async Task DoLockLostSample(CancellationToken stoppingToken)
+        {
+            try
+            {
+                var myId = Guid.NewGuid();
+
+                // We will always lose the lock if the renewal interval is longer than the lock increase
+                var model = RequestLockModel
+                    .WithKey("lit-sample-lock-lost")
+                    .WithLockIncrease(TimeSpan.FromSeconds(2))
+                    .WithRenewLockInterval(TimeSpan.FromSeconds(5));
+
+                await using var locker = await redisDistributedLockService.AcquireLockAsync(model, stoppingToken);
+
+                if (!locker.Succeeded)
+                {
+                    logger.LogInformation("Never got the lock {@Id}", myId);
+                    return;
+                }
+
+                logger.LogInformation("Got the lock, status is {@Status} {@Id}", locker.Status, myId);
+
+                // Option 1: link the LockLostToken into your work so it cancels if the lock is lost
+                using var workCts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken, locker.LockLostToken);
+
+                try
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(10), workCts.Token);
+                }
+                catch (OperationCanceledException) when (locker.Status == LitRedisLockStatus.Lost)
+                {
+                    logger.LogWarning("Work was cancelled because the lock was lost {@Id}", myId);
+                }
+
+                // Option 2: poll explicitly when reaching a critical section
+                locker.ThrowOnLockLost();
+
+                logger.LogInformation("Finished work while still holding the lock {@Id}", myId);
+            }
+            catch (LockLostException ex)
+            {
+                logger.LogCritical(ex, "Lock was lost mid-operation");
+            }
+            catch (Exception ex)
+            {
+                logger.LogCritical(ex, "Error running lock lost sample");
+            }
         }
 
         private async Task DoLockSample(CancellationToken stoppingToken)

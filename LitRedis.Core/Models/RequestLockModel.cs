@@ -22,13 +22,30 @@ public class RequestLockModel
     /// <summary>
     /// Gets or sets a value indicating how long to extend the lock each time it is renewed.
     /// </summary>
-    public TimeSpan LockIncrease { get; set; } = TimeSpan.FromSeconds(10);
+    public TimeSpan LockIncrease { get; set; } = TimeSpan.FromSeconds(30);
 
     /// <summary>
-    ///  Sets a value indicating how long to extend the lock each time it is renewed.
+    /// Gets or sets the maximum number of consecutive exceptions from <c>ExtendLockAsync</c>
+    /// before the lock is considered lost. Defaults to 3. Set to 0 to mark lost on the first exception.
+    /// </summary>
+    public int MaxExtendRetries { get; set; } = 3;
+
+    /// <summary>
+    /// Sets the maximum number of consecutive exceptions before the lock is considered lost.
+    /// </summary>
+    /// <param name="maxExtendRetries">Maximum consecutive exceptions allowed before marking the lock lost.</param>
+    /// <returns>The request lock model</returns>
+    public RequestLockModel WithMaxExtendRetries(int maxExtendRetries)
+    {
+        MaxExtendRetries = maxExtendRetries;
+        return this;
+    }
+
+    /// <summary>
+    /// Sets a value indicating how long to extend the lock each time it is renewed.
     /// </summary>
     /// <param name="lockIncrease">How long to increase the lock for.</param>
-    /// <returns></returns>
+    /// <returns>The request lock model</returns>
     public RequestLockModel WithLockIncrease(TimeSpan lockIncrease)
     {
         LockIncrease = lockIncrease;
