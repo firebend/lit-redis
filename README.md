@@ -10,6 +10,7 @@
       - [Wait forever](#wait-forever)
       - [Set the wait increase, timeout, and interval](#set-the-wait-increase-timeout-and-interval)
     - [No wait](#no-wait)
+    - [Handling lost locks](#handling-lost-locks)
 
 # lit-redis
 A C# managed Redis Library for doing caching, locking, and concurrency
@@ -107,7 +108,7 @@ Attempt to acquire a lock on a particular key, waiting until the lock is able to
 
 #### Default
 
-By default, `LockIncrease` and `RenewLockInterval` are both set to 10 seconds.
+By default, `LockIncrease` is set to 30 seconds and `RenewLockInterval` is set to 10 seconds. The renewal interval should always be shorter than the lock increase so the lock is extended before it expires.
 
 ```csharp
 try {
@@ -199,3 +200,54 @@ catch (Exception ex) {
    _logger.LogCritical(ex, "Error");
 }
 ```
+
+## Acquire failure exception
+
+If acquiring a lock fails, calling `ThrowIfFailedToAcquire()` will throw an `AcquireLockFailedException`
+
+### Handling lost locks
+
+Once a lock is acquired, a background task keeps it alive by extending it on every `RenewLockInterval`. If a renewal ever fails (for example because Redis returned an error or another client took over the key after expiration), the lock is considered _lost_. When this happens the model exposes two ways to react so you can pick the one that fits your code style.
+
+- `Status` reflects the current state of the lock: `NotAcquired`, `Acquired`, or `Lost`.
+- `LockLostToken` is a `CancellationToken` that is cancelled when the lock is lost. It's safe to link it into your own work via `CancellationTokenSource.CreateLinkedTokenSource`.
+- `ThrowOnLockLost()` throws a `LockLostException` if the lock has already been lost. Useful right before a critical section.
+
+```csharp
+try {
+   var model = RequestLockModel
+      .WithKey("lit-sample")
+      .WithLockIncrease(TimeSpan.FromSeconds(5))
+      .WithRenewLockInterval(TimeSpan.FromSeconds(2));
+
+   await using var locker = await _redisDistributedLockService.AcquireLockAsync(model, stoppingToken);
+
+   if (!locker.Succeeded)
+   {
+      _logger.LogInformation("No lock acquired");
+      return;
+   }
+
+   // 1. Link the cancellation token into your work
+   using var workCts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken, locker.LockLostToken);
+   await DoWorkAsync(workCts.Token);
+
+   // 2. Throw at a critical section
+   locker.ThrowOnLockLost();
+   await CommitAsync(stoppingToken);
+}
+catch (LockLostException ex) {
+   _logger.LogCritical(ex, "Lock was lost mid-operation");
+}
+catch (Exception ex) {
+   _logger.LogCritical(ex, "Error");
+}
+```
+
+When the lock is lost, the release callback will _not_ attempt to release the key on dispose, since another holder may already own it.
+
+## Lock renewal failures
+
+If the background renewal loop repeatedly fails to extend the lock the library will mark the lock as lost. The number of consecutive extension failures tolerated before marking the lock lost is configurable via `RequestLockModel.MaxExtendRetries` (default: 3). You can set it fluently with `WithMaxExtendRetries(int)` on the request model.
+
+When a lock is marked lost the `Status` becomes `Lost` and `LockLostToken` will be cancelled so callers can react promptly.
