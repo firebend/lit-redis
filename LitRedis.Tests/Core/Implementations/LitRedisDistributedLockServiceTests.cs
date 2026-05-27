@@ -87,13 +87,13 @@ public class LitRedisDistributedLockServiceTests
         locker.Succeeded.Should().BeTrue();
 
         // Wait for the renewal loop to run: delay (100ms) + extend call + mark lost
-        await Task.Delay(TimeSpan.FromMilliseconds(200));
+        await Task.Delay(TimeSpan.FromMilliseconds(200), TestContext.CancellationTokenSource.Token);
 
         //assert
         locker.Status.Should().Be(LitRedisLockStatus.Lost);
         locker.LockLostToken.IsCancellationRequested.Should().BeTrue();
 
-        Action throwOnLost = () => locker.ThrowOnLockLost();
+        var throwOnLost = locker.ThrowOnLockLost;
         throwOnLost.Should().Throw<LockLostException>();
 
         // Verify ExtendLockAsync was called (diagnostic)
@@ -103,4 +103,6 @@ public class LitRedisDistributedLockServiceTests
         await locker.DisposeAsync();
         wrapper.Verify(x => x.ReleaseLockAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
     }
+
+    public TestContext TestContext { get; set; }
 }
