@@ -1,4 +1,11 @@
 Lit Redis Changelog
+<a name="4.3.0"></a>
+## [4.3.0](https://www.github.com/firebend/lit-redis/releases/tag/v4.3.0) (2026-05-27)
+
+### ✨ Features
+
+* implement lock lost handling and exceptions ([#150](https://www.github.com/firebend/lit-redis/issues/150)) ([80a5196](https://www.github.com/firebend/lit-redis/commit/80a5196b81127d6afd8f12b5e61d2598a33c8ef0))
+
 <a name="4.2.6"></a>
 ## [4.2.6](https://www.github.com/firebend/lit-redis/releases/tag/v4.2.6) (2025-09-03)
 
