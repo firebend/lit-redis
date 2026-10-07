@@ -13,9 +13,9 @@
     <PackageTags>firebend;redis;cache;caching;lock;distributed;locking</PackageTags>
     <Authors>Firebend</Authors>
     <RepositoryUrl>https://github.com/firebend/lit-redis</RepositoryUrl>
-    <PackageLicenseUrl>https://github.com/firebend/lit-redis/blob/main/LICENSE</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/firebend/lit-redis</PackageProjectUrl>
-    <PackageIconUrl>https://github.com/firebend/lit-redis/blob/main/nuget-image.png?raw=true</PackageIconUrl>
+    <PackageIcon>nuget-image.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
