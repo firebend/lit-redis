@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using LitRedis.Core.Interfaces;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Primitives;
+using StackExchange.Redis;
 
 namespace LitRedis.Core.Implementations;
 
@@ -48,7 +49,7 @@ public class LitRedisCacheStore : ILitRedisCacheStore
 
         var json = _jsonSerializer.Serialize(model);
 
-        await _litRedisConnectionService.UseDbAsync((db, _) => db.StringSetAsync(key, json, expiry), cancellationToken);
+        await _litRedisConnectionService.UseDbAsync((db, _) => db.StringSetAsync(key, json, expiry.HasValue ? new Expiration(expiry.Value) : Expiration.Default), cancellationToken);
     }
 
     /// <inheritdoc />
