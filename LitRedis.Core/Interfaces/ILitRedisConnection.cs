@@ -5,7 +5,7 @@ namespace LitRedis.Core.Interfaces;
 
 public interface ILitRedisConnection
 {
-    void ForceReconnect();
+    public void ForceReconnect();
 
-    Task<ConnectionMultiplexer> GetConnectionMultiplexer();
+    public Task<ConnectionMultiplexer> GetConnectionMultiplexer();
 }

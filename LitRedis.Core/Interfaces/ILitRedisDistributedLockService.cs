@@ -6,5 +6,5 @@ namespace LitRedis.Core.Interfaces;
 
 public interface ILitRedisDistributedLockService
 {
-    Task<LitRedisDistributedLockModel> AcquireLockAsync(RequestLockModel model, CancellationToken cancellationToken);
+    public Task<LitRedisDistributedLockModel> AcquireLockAsync(RequestLockModel model, CancellationToken cancellationToken);
 }
