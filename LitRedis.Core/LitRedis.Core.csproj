@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFrameworks>$(FirebendTargetFrameworks)</TargetFrameworks>
     <Version>5.0.0</Version>
     <LangVersion>latestmajor</LangVersion>
     <Bumper>4</Bumper>
@@ -13,17 +13,16 @@
     <PackageTags>firebend;redis;cache;caching;lock;distributed;locking</PackageTags>
     <Authors>Firebend</Authors>
     <RepositoryUrl>https://github.com/firebend/lit-redis</RepositoryUrl>
-    <PackageLicenseUrl>https://github.com/firebend/lit-redis/blob/main/LICENSE</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/firebend/lit-redis</PackageProjectUrl>
-    <PackageIconUrl>https://github.com/firebend/lit-redis/blob/main/nuget-image.png?raw=true</PackageIconUrl>
+    <PackageIcon>nuget-image.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.8" />
-    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.8" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.8" />
-    <PackageReference Include="StackExchange.Redis" Version="2.9.11" />
-    <PackageReference Include="System.Text.Json" Version="9.0.8" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" />
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" />
+    <PackageReference Include="Microsoft.Extensions.Logging" />
+    <PackageReference Include="StackExchange.Redis" />
   </ItemGroup>
 
 </Project>

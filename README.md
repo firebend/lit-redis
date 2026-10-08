@@ -251,3 +251,9 @@ When the lock is lost, the release callback will _not_ attempt to release the ke
 If the background renewal loop repeatedly fails to extend the lock the library will mark the lock as lost. The number of consecutive extension failures tolerated before marking the lock lost is configurable via `RequestLockModel.MaxExtendRetries` (default: 3). You can set it fluently with `WithMaxExtendRetries(int)` on the request model.
 
 When a lock is marked lost the `Status` becomes `Lost` and `LockLostToken` will be cancelled so callers can react promptly.
+
+## Building from source
+
+- Building requires the .NET SDK version in [`global.json`](global.json) (10.0.401 or a later 10.0.4xx patch). Running the tests also needs the .NET 9 runtime.
+- Target frameworks are set in [`Directory.Build.props`](Directory.Build.props). `FirebendTargetFrameworks` lists the frameworks every library and test project builds for (currently `net9.0;net10.0`). `FirebendAppTargetFramework` is the single framework for samples and other runnable apps.
+- Package versions are managed centrally in [`Directory.Packages.props`](Directory.Packages.props). Microsoft framework packages have one version block per target framework, so adding a framework means adding it to `FirebendTargetFrameworks` and adding a matching block there.
