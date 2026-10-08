@@ -1,4 +1,15 @@
 Lit Redis Changelog
+<a name="6.0.0"></a>
+## [6.0.0](https://www.github.com/firebend/lit-redis/releases/tag/v6.0.0) (2026-10-08)
+
+### ✨ Features
+
+* target net9.0 and net10.0 with configurable frameworks ([#151](https://www.github.com/firebend/lit-redis/issues/151)) ([568550d](https://www.github.com/firebend/lit-redis/commit/568550d3957601e480ec4ad611e055cd40faa253))
+
+### Breaking Changes
+
+* target net9.0 and net10.0 with configurable frameworks ([#151](https://www.github.com/firebend/lit-redis/issues/151)) ([568550d](https://www.github.com/firebend/lit-redis/commit/568550d3957601e480ec4ad611e055cd40faa253))
+
 <a name="5.0.0"></a>
 ## [5.0.0](https://www.github.com/firebend/lit-redis/releases/tag/v5.0.0) (2026-05-27)
 
