@@ -27,7 +27,35 @@ public class LitLitRedisConnection : ILitRedisConnection
         _multiplexer = CreateMultiplexer();
     }
 
-    public Task<ConnectionMultiplexer> GetConnectionMultiplexer() => _multiplexer.Value;
+    /// <summary>
+    /// Returns the shared multiplexer. A failed connect (e.g. the ConfigurationOptionsFactory threw, or
+    /// abortConnect=true and Redis was down) is not cached: the next call starts a fresh attempt, so a
+    /// failure at startup does not last for the life of the process. Concurrent callers share one attempt.
+    /// </summary>
+    public Task<ConnectionMultiplexer> GetConnectionMultiplexer()
+    {
+        var current = Volatile.Read(ref _multiplexer);
+
+        // Only a failure an earlier call already returned is replaced; a first attempt that fails
+        // goes back to its caller as-is rather than being retried inside the same call.
+        if (!current.IsValueCreated || current.Value is { IsFaulted: false, IsCanceled: false })
+        {
+            return current.Value;
+        }
+
+        lock (_reconnectLock)
+        {
+            // Another caller may already have replaced the failed attempt; only replace it once.
+            if (ReferenceEquals(_multiplexer, current))
+            {
+                Volatile.Write(ref _multiplexer, CreateMultiplexer());
+            }
+
+            current = _multiplexer;
+        }
+
+        return current.Value;
+    }
 
     ///<summary>
     /// Force a new ConnectionMultiplexer to be created.
