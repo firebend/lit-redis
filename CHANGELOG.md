@@ -1,4 +1,12 @@
 Lit Redis Changelog
+<a name="6.0.1"></a>
+## [6.0.1](https://www.github.com/firebend/lit-redis/releases/tag/v6.0.1) (2026-11-16)
+
+### Other
+
+* publish to nuget.org with trusted publishing ([#154](https://www.github.com/firebend/lit-redis/issues/154)) ([27f6659](https://www.github.com/firebend/lit-redis/commit/27f6659a0a23fcbbb2977c4525015826a8f135da))
+* retry a failed initial connect instead of caching it ([#155](https://www.github.com/firebend/lit-redis/issues/155)) ([cf29911](https://www.github.com/firebend/lit-redis/commit/cf29911eb956ef37a022ba4fe52240b95113ef5a))
+
 <a name="6.0.0"></a>
 ## [6.0.0](https://www.github.com/firebend/lit-redis/releases/tag/v6.0.0) (2026-10-08)
 
